@@ -1,7 +1,7 @@
-import { mkdir, readFile, writeFile, readdir } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { Candidate, VacancyRecord, VacancySummary } from "@cvhelper/shared";
+import type { Candidate, VacancyRecord } from "@cvhelper/shared";
 import { EMPTY_CANDIDATE } from "@cvhelper/shared";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -21,11 +21,6 @@ export async function readCandidate(): Promise<Candidate> {
   } catch {
     return EMPTY_CANDIDATE;
   }
-}
-
-export async function writeCandidate(candidate: Candidate): Promise<void> {
-  await ensureDataDir();
-  await writeFile(CANDIDATE_FILE, JSON.stringify(candidate, null, 2), "utf-8");
 }
 
 const COMBINING_MARKS = /[̀-ͯ]/g;
@@ -115,23 +110,4 @@ export async function markPdfExported(id: string): Promise<void> {
 
 export function vacancyPdfPath(id: string): string {
   return path.join(vacancyDir(id), "tailored-cv.pdf");
-}
-
-export async function listVacancies(): Promise<VacancySummary[]> {
-  await ensureDataDir();
-  const entries = await readdir(VACANCIES_DIR, { withFileTypes: true });
-  const dirs = entries.filter((e) => e.isDirectory()).map((e) => e.name);
-  const summaries: VacancySummary[] = [];
-  for (const id of dirs) {
-    const record = await readVacancyRecord(id);
-    if (record) {
-      summaries.push({
-        id: record.id,
-        company: record.vacancy.company,
-        role: record.vacancy.role,
-        createdAt: record.createdAt,
-      });
-    }
-  }
-  return summaries.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }

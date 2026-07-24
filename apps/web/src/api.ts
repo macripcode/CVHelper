@@ -1,4 +1,4 @@
-import type { Candidate, VacancyDetails, VacancyRecord, VacancySummary } from '@cvhelper/shared'
+import type { Candidate, VacancyDetails, VacancyRecord } from '@cvhelper/shared'
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -14,8 +14,6 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   getCandidate: () => request<Candidate>('/api/candidate'),
-  saveCandidate: (candidate: Candidate) =>
-    request<Candidate>('/api/candidate', { method: 'POST', body: JSON.stringify(candidate) }),
 
   createVacancy: (payload: { vacancy: VacancyDetails; notes?: string }) =>
     request<VacancyRecord>('/api/vacancy', { method: 'POST', body: JSON.stringify(payload) }),
@@ -37,8 +35,6 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ vacancyId }),
     }),
-
-  listHistory: () => request<VacancySummary[]>('/api/history'),
 
   downloadLatexPdf: async (candidate: Candidate): Promise<Blob> => {
     const res = await fetch('/api/latex/pdf', {

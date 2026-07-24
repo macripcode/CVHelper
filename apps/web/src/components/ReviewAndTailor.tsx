@@ -4,7 +4,7 @@ import { EMPTY_VACANCY } from '@cvhelper/shared'
 import { extractJobTechnologies, techCatalog } from '@cvhelper/tech-fit'
 import { api } from '../api'
 
-export function ReviewAndTailor({ onProcessed }: { onProcessed?: () => void }) {
+export function ReviewAndTailor() {
   const [form, setForm] = useState<VacancyDetails>(EMPTY_VACANCY)
   const [notes, setNotes] = useState('')
   const [vacancy, setVacancy] = useState<VacancyRecord | null>(null)
@@ -46,7 +46,6 @@ export function ReviewAndTailor({ onProcessed }: { onProcessed?: () => void }) {
       setVacancy(record)
       setTailoredCv('')
       setDownloadUrl(null)
-      onProcessed?.()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error saving the job posting')
     } finally {

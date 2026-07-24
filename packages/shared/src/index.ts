@@ -99,13 +99,6 @@ export const EMPTY_VACANCY: VacancyDetails = {
   requirements: [],
 };
 
-export interface VacancySummary {
-  id: string;
-  company: string;
-  role: string;
-  createdAt: string;
-}
-
 export interface VacancyRecord {
   id: string;
   createdAt: string;
