@@ -1,0 +1,23 @@
+{
+  "name": "cvhelper",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "build": "npm run build --workspace=packages/shared && npm run build --workspace=packages/tech-fit && npm run build --workspace=apps/api && npm run build --workspace=apps/web",
+    "build:shared": "npm run build --workspace=packages/shared",
+    "build:tech-fit": "npm run build --workspace=packages/tech-fit",
+    "build:api": "npm run build --workspace=apps/api",
+    "build:web": "npm run build --workspace=apps/web",
+    "lint": "npm run lint --workspace=apps/web && npm run lint --workspace=apps/api",
+    "typecheck": "npm run typecheck --workspace=apps/web && npm run typecheck --workspace=apps/api && npm run typecheck --workspace=packages/tech-fit",
+    "test:tech-fit": "npm run test --workspace=packages/tech-fit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
