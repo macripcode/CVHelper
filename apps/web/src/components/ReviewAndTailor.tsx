@@ -18,14 +18,18 @@ export function ReviewAndTailor() {
     setForm({ ...form, [key]: value })
   }
 
-  function updateListField(key: 'techStack' | 'responsibilities' | 'requirements', value: string, separator: '\n' | ',') {
+  function updateListField(key: 'responsibilities' | 'requirements', value: string) {
     setForm({
       ...form,
       [key]: value
-        .split(separator)
+        .split('\n')
         .map((v) => v.trim())
         .filter(Boolean),
     })
+  }
+
+  function removeTech(index: number) {
+    setForm({ ...form, techStack: form.techStack.filter((_, i) => i !== index) })
   }
 
   function readTechnologiesFromText() {
@@ -100,6 +104,16 @@ export function ReviewAndTailor() {
       </fieldset>
       <fieldset>
         <legend>Job posting details</legend>
+        {form.techStack.length > 0 && (
+          <div className="tag-list">
+            {form.techStack.map((tech, i) => (
+              <span className="tag" key={i}>
+                {tech}
+                <button type="button" aria-label={`Remove ${tech}`} onClick={() => removeTech(i)}>×</button>
+              </span>
+            ))}
+          </div>
+        )}
         <div className="grid">
           <input placeholder="Company" value={form.company} onChange={(e) => updateField('company', e.target.value)} />
           <input placeholder="Role" value={form.role} onChange={(e) => updateField('role', e.target.value)} />
@@ -114,22 +128,17 @@ export function ReviewAndTailor() {
           value={form.requiredExperience}
           onChange={(e) => updateField('requiredExperience', e.target.value)}
         />
-        <input
-          placeholder="Tech stack (comma-separated)"
-          value={form.techStack.join(', ')}
-          onChange={(e) => updateListField('techStack', e.target.value, ',')}
-        />
         <textarea
           rows={2}
           placeholder="Responsibilities (one per line)"
           value={form.responsibilities.join('\n')}
-          onChange={(e) => updateListField('responsibilities', e.target.value, '\n')}
+          onChange={(e) => updateListField('responsibilities', e.target.value)}
         />
         <textarea
           rows={2}
           placeholder="Requirements (one per line)"
           value={form.requirements.join('\n')}
-          onChange={(e) => updateListField('requirements', e.target.value, '\n')}
+          onChange={(e) => updateListField('requirements', e.target.value)}
         />
       </fieldset>
       <button type="button" onClick={saveVacancy} disabled={loading === 'saving' || (!form.company.trim() && !form.role.trim())}>
