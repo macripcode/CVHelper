@@ -32,6 +32,7 @@ export function CvLatexPanel() {
   const [newTech, setNewTech] = useState('')
   const [draggedExperienceIndex, setDraggedExperienceIndex] = useState<number | null>(null)
   const [draggedEducationIndex, setDraggedEducationIndex] = useState<number | null>(null)
+  const [draggedLanguageIndex, setDraggedLanguageIndex] = useState<number | null>(null)
   const [status, setStatus] = useState<'loading' | 'idle' | 'error'>('loading')
   const [downloading, setDownloading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -171,6 +172,24 @@ export function CvLatexPanel() {
 
   function removeLanguage(index: number) {
     setResume({ ...resume, languages: resume.languages.filter((_, i) => i !== index) })
+  }
+
+  function handleLanguageDragStart(index: number) {
+    setDraggedLanguageIndex(index)
+  }
+
+  function handleLanguageDragOver(e: DragEvent, index: number) {
+    e.preventDefault()
+    if (draggedLanguageIndex === null || draggedLanguageIndex === index) return
+    const languages = [...resume.languages]
+    const [moved] = languages.splice(draggedLanguageIndex, 1)
+    languages.splice(index, 0, moved)
+    setDraggedLanguageIndex(index)
+    setResume({ ...resume, languages })
+  }
+
+  function handleLanguageDragEnd() {
+    setDraggedLanguageIndex(null)
   }
 
   async function downloadPdf() {
@@ -375,7 +394,25 @@ export function CvLatexPanel() {
       <fieldset>
         <legend>Languages</legend>
         {resume.languages.map((lang, i) => (
-          <div className="grid" key={i}>
+          <div
+            className={`grid${draggedLanguageIndex === i ? ' dragging' : ''}`}
+            key={i}
+            onDragOver={(e) => handleLanguageDragOver(e, i)}
+          >
+            <button
+              type="button"
+              className="drag-handle"
+              aria-label="Drag to reorder"
+              draggable
+              onDragStart={() => handleLanguageDragStart(i)}
+              onDragEnd={handleLanguageDragEnd}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" y1="8" x2="20" y2="8" />
+                <line x1="4" y1="14" x2="20" y2="14" />
+                <line x1="4" y1="20" x2="20" y2="20" />
+              </svg>
+            </button>
             <input placeholder="Language" value={lang.language} onChange={(e) => updateLanguage(i, 'language', e.target.value)} />
             <input placeholder="Level" value={lang.level} onChange={(e) => updateLanguage(i, 'level', e.target.value)} />
             <button type="button" className="icon-button" aria-label="Remove language" onClick={() => removeLanguage(i)}>×</button>

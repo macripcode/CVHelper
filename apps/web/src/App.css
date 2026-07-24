@@ -148,7 +148,8 @@ button:disabled {
   gap: 8px;
 }
 
-.card.dragging {
+.card.dragging,
+.grid.dragging {
   opacity: 0.5;
 }
 
