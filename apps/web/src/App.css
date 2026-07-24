@@ -82,6 +82,18 @@ legend {
   gap: 8px;
 }
 
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.field-label {
+  align-self: flex-start;
+  font-size: 11px;
+  color: #fff;
+}
+
 .date-row input {
   flex: 1 1 0;
 }

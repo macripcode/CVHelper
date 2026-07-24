@@ -1,4 +1,4 @@
-import type { Candidate, CvTailoringInput, VacancyDetails, VacancyRecord } from '@cvhelper/shared'
+import type { Candidate, CvTailoringInput, VacancyDetails } from '@cvhelper/shared'
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -15,32 +15,12 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 export const api = {
   getCandidate: () => request<Candidate>('/api/candidate'),
 
-  createVacancy: (payload: { vacancy: VacancyDetails; notes?: string }) =>
-    request<VacancyRecord>('/api/vacancy', { method: 'POST', body: JSON.stringify(payload) }),
-  getVacancy: (id: string) => request<VacancyRecord>(`/api/vacancy/${id}`),
-
-  tailorCv: (vacancyId: string) =>
-    request<{ vacancyId: string; tailoredCvMarkdown: string }>('/api/tailor', {
-      method: 'POST',
-      body: JSON.stringify({ vacancyId }),
-    }),
-  saveTailoredCv: (vacancyId: string, markdown: string) =>
-    request<{ vacancyId: string; tailoredCvMarkdown: string }>('/api/tailor', {
-      method: 'PUT',
-      body: JSON.stringify({ vacancyId, markdown }),
-    }),
-
-  exportPdf: (vacancyId: string) =>
-    request<{ vacancyId: string; downloadUrl: string }>('/api/pdf', {
-      method: 'POST',
-      body: JSON.stringify({ vacancyId }),
-    }),
-
   extractVacancyDetails: (jobDescription: string) =>
-    request<Partial<Pick<VacancyDetails, 'company' | 'role' | 'seniority' | 'workMode' | 'location' | 'salary'>>>(
-      '/api/extraction/vacancy-details',
-      { method: 'POST', body: JSON.stringify({ jobDescription }) },
-    ),
+    request<
+      Partial<Pick<VacancyDetails, 'company' | 'role' | 'seniority' | 'workMode' | 'location' | 'salary'>> & {
+        requiredLanguages?: string[]
+      }
+    >('/api/extraction/vacancy-details', { method: 'POST', body: JSON.stringify({ jobDescription }) }),
 
   downloadLatexPdf: async (resume: CvTailoringInput): Promise<Blob> => {
     const res = await fetch('/api/latex/pdf', {

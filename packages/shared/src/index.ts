@@ -108,12 +108,9 @@ export interface VacancyDetails {
   seniority: string;
   workMode: string;
   location: string;
-  requiredExperience: string;
   techStack: string[];
   requiredLanguages: string[];
   salary: string;
-  responsibilities: string[];
-  requirements: string[];
 }
 
 export const EMPTY_VACANCY: VacancyDetails = {
@@ -122,12 +119,9 @@ export const EMPTY_VACANCY: VacancyDetails = {
   seniority: "",
   workMode: "",
   location: "",
-  requiredExperience: "",
   techStack: [],
   requiredLanguages: [],
   salary: "",
-  responsibilities: [],
-  requirements: [],
 };
 
 export interface VacancyRecord {
