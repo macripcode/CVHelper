@@ -1,4 +1,5 @@
-import type { Candidate, CvTailoringInput, VacancyDetails } from '@cvhelper/shared'
+import type { Candidate, CvTailoringInput } from '@cvhelper/shared'
+import type { JobPostingAnalysis } from '@cvhelper/vacancy-extractor'
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -15,12 +16,11 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 export const api = {
   getCandidate: () => request<Candidate>('/api/candidate'),
 
-  extractVacancyDetails: (jobDescription: string) =>
-    request<
-      Partial<Pick<VacancyDetails, 'company' | 'role' | 'seniority' | 'workMode' | 'location' | 'salary'>> & {
-        requiredLanguages?: string[]
-      }
-    >('/api/extraction/vacancy-details', { method: 'POST', body: JSON.stringify({ jobDescription }) }),
+  extractJobPosting: (jobDescription: string) =>
+    request<JobPostingAnalysis>('/api/extraction/job-posting', {
+      method: 'POST',
+      body: JSON.stringify({ jobDescription }),
+    }),
 
   downloadLatexPdf: async (resume: CvTailoringInput): Promise<Blob> => {
     const res = await fetch('/api/latex/pdf', {

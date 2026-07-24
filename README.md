@@ -1,21 +1,19 @@
 # CVHelper
 
-A local, personal tool to tailor your CV/resume to specific job vacancies. Everything runs on your machine and is local/deterministic, with one narrow exception: automatic detection of vacancy fields (company, role, seniority, work mode, location, salary) calls the Gemini API (see Prerequisites).
+A local, personal tool to tailor your CV/resume to specific job vacancies. Everything runs on your machine and is local/deterministic, with one narrow exception: automatic job posting analysis calls the Gemini API (see Prerequisites).
 
 ## What it does
 
-- **Candidate**: keep a structured profile (personal info, experience, education, tech stack, languages, expected salary).
 - **Review + Tailoring**:
   - Paste a job posting and detect which known technologies it mentions (local catalog matching, no AI), plus auto-detect company, role, seniority, work mode, location, and salary (calls the Gemini API, requires `GEMINI_API_KEY`).
-  - Fill in job posting details and generate a resume draft from your Candidate profile to manually tailor per vacancy, exported as PDF.
+  - Add required languages manually and edit the job posting details form.
   - **CV Tailoring panel**: a form prefilled from your Candidate profile (local copy, doesn't overwrite your saved profile) that generates a LaTeX (Harvard-style) resume and downloads it as a **compiled PDF**.
-- **History**: browse past job postings you've processed.
 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) 20+ and npm.
 - A local **LaTeX distribution** with `pdflatex` on your `PATH` — required only for the "CV Tailoring" panel's PDF download. Not installed via npm.
-- A **Gemini API key** — optional, only required for the "Read" button's automatic vacancy-field detection. Get one at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and set it as `GEMINI_API_KEY` in `apps/api/.env`. Without it, that one autofill fails gracefully; tech stack detection and everything else keeps working.
+- A **Gemini API key** — optional, only required for the "Read" button's automatic job posting analysis. Get one at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and set it as `GEMINI_API_KEY` in `apps/api/.env`. Without it, that one autofill fails gracefully; tech stack detection and everything else keeps working.
 
 ### Installing LaTeX (macOS) — exact commands, run in order
 
@@ -112,7 +110,7 @@ apps/
 packages/
   shared/           Shared TypeScript types (Candidate, VacancyDetails, ...)
   tech-fit/         Local technology-detection/fit-matching algorithm (no AI)
-  vacancy-extractor/ Vacancy-field detection (company/role/seniority/workMode/location/salary) via the Gemini API — the app's one AI call
+  vacancy-extractor/ Full job posting analysis (company/role/seniority/location/workMode/employmentType/salary/technologies/...) via the Gemini API — the app's one AI call
 ```
 
 See [CLAUDE.md](CLAUDE.md) for a deeper architecture walkthrough.

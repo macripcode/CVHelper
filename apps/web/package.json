@@ -13,6 +13,7 @@
   "dependencies": {
     "@cvhelper/shared": "*",
     "@cvhelper/tech-fit": "*",
+    "@cvhelper/vacancy-extractor": "*",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },

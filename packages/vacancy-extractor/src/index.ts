@@ -1,2 +1,2 @@
-export { extractVacancyDetails } from "./extractVacancyDetails.js";
-export type { ExtractedVacancyDetails } from "./extractVacancyDetails.js";
+export { extractJobPosting } from "./extractJobPosting.js";
+export type { JobPostingAnalysis, SalaryRange, Seniority, WorkMode, EmploymentType } from "./types.js";

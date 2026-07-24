@@ -1,0 +1,27 @@
+export function buildJobPostingPrompt(jobDescription: string): string {
+  return [
+    "You will be given the full text of a job posting. Analyze it carefully and extract structured information.",
+    "",
+    "Rules:",
+    "- Extract only information that can be inferred with reasonable confidence from the text.",
+    "- Never invent or guess data.",
+    "- If a field cannot be determined with confidence, use null (or an empty array for list fields).",
+    "",
+    "Field guidance:",
+    "- company: the name of the company POSTING the job. Ignore clients, customers, universities, or any other organization merely mentioned in the text.",
+    '- role: the job title (e.g. "Frontend Developer", "Software Engineer II", "Senior React Developer").',
+    "- seniority: one of Intern/Junior/Mid/Senior/Staff/Lead/Principal, or null.",
+    '- location: an array of cities/states/countries mentioned for the role. If the role is remote, use ["Remote"]. If multiple locations are mentioned, include all of them.',
+    "- workMode: one of Remote/Hybrid/On-site, or null.",
+    "- employmentType: one of Full-time/Part-time/Contract/Temporary/Internship/Freelance, or null.",
+    "- salary: an object with currency, min, max, period (e.g. \"year\", \"month\", \"hour\"), or null if no salary is mentioned.",
+    "- requiredExperience: the minimum number of years of experience required, as a number, or null if not mentioned.",
+    "- technologies: a deduplicated list of the technologies mentioned in the posting.",
+    "- responsibilities: the main responsibilities of the role, at most 10.",
+    "- requirements: the main requirements for the role, at most 10.",
+    "- preferredQualifications: the desirable/nice-to-have qualifications, at most 10.",
+    "",
+    "Job posting:",
+    jobDescription,
+  ].join("\n");
+}

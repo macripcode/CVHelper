@@ -38,24 +38,22 @@ export function ReviewAndTailor() {
 
     setLoading('reading')
     try {
-      const details = await api.extractVacancyDetails(notes)
+      const analysis = await api.extractJobPosting(notes)
       setForm((prev) => {
         const next = { ...prev }
-        for (const field of ['company', 'role', 'seniority', 'workMode', 'location', 'salary'] as const) {
-          const value = details[field]
-          if (value && !prev[field].trim()) next[field] = value
-        }
-        if (details.requiredLanguages) {
-          const merged = [...prev.requiredLanguages]
-          for (const language of details.requiredLanguages) {
-            if (!merged.includes(language)) merged.push(language)
-          }
-          next.requiredLanguages = merged
+        if (analysis.company && !prev.company.trim()) next.company = analysis.company
+        if (analysis.role && !prev.role.trim()) next.role = analysis.role
+        if (analysis.seniority && !prev.seniority.trim()) next.seniority = analysis.seniority
+        if (analysis.workMode && !prev.workMode.trim()) next.workMode = analysis.workMode
+        if (analysis.location && !prev.location.trim()) next.location = analysis.location.join(', ')
+        if (analysis.salary && !prev.salary.trim()) {
+          const { currency, min, max, period } = analysis.salary
+          next.salary = `${currency} ${min}-${max}/${period}`
         }
         return next
       })
     } catch {
-      // Vacancy-detail detection is a non-blocking convenience — tech stack detection above already succeeded.
+      // Job posting analysis is a non-blocking convenience — tech stack detection above already succeeded.
     } finally {
       setLoading('idle')
     }

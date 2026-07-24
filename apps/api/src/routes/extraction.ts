@@ -1,20 +1,20 @@
 import { Hono } from "hono";
-import { extractVacancyDetails } from "@cvhelper/vacancy-extractor";
+import { extractJobPosting } from "@cvhelper/vacancy-extractor";
 
 export const extractionRoutes = new Hono();
 
-interface ExtractVacancyDetailsBody {
+interface ExtractJobPostingBody {
   jobDescription: string;
 }
 
-extractionRoutes.post("/vacancy-details", async (c) => {
-  const { jobDescription } = await c.req.json<ExtractVacancyDetailsBody>();
+extractionRoutes.post("/job-posting", async (c) => {
+  const { jobDescription } = await c.req.json<ExtractJobPostingBody>();
 
   try {
-    const details = await extractVacancyDetails(jobDescription);
-    return c.json(details);
+    const analysis = await extractJobPosting(jobDescription);
+    return c.json(analysis);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error extracting vacancy details";
+    const message = err instanceof Error ? err.message : "Unknown error extracting the job posting";
     return c.json({ error: message }, 500);
   }
 });
