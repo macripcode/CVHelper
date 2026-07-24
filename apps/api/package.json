@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@cvhelper/shared": "*",
+    "@cvhelper/vacancy-extractor": "*",
     "@hono/node-server": "^1.13.7",
     "dotenv": "^17.4.2",
     "hono": "^4.6.13",

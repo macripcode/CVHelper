@@ -9,7 +9,7 @@ export function ReviewAndTailor() {
   const [notes, setNotes] = useState('')
   const [vacancy, setVacancy] = useState<VacancyRecord | null>(null)
   const [tailoredCv, setTailoredCv] = useState('')
-  const [loading, setLoading] = useState<'idle' | 'saving' | 'tailoring' | 'exporting'>('idle')
+  const [loading, setLoading] = useState<'idle' | 'reading' | 'saving' | 'tailoring' | 'exporting'>('idle')
   const [error, setError] = useState<string | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [detectionHint, setDetectionHint] = useState<string | null>(null)
@@ -32,7 +32,7 @@ export function ReviewAndTailor() {
     setForm({ ...form, techStack: form.techStack.filter((_, i) => i !== index) })
   }
 
-  function readTechnologiesFromText() {
+  async function readTechnologiesFromText() {
     const detected = extractJobTechnologies(notes, techCatalog)
     setForm({ ...form, techStack: detected })
     setDetectionHint(
@@ -40,6 +40,23 @@ export function ReviewAndTailor() {
         ? `Detected ${detected.length} technolog${detected.length === 1 ? 'y' : 'ies'}: ${detected.join(', ')}`
         : 'No known technologies were detected in this text.',
     )
+
+    setLoading('reading')
+    try {
+      const details = await api.extractVacancyDetails(notes)
+      setForm((prev) => {
+        const next = { ...prev }
+        for (const field of ['company', 'role', 'seniority', 'workMode', 'location', 'salary'] as const) {
+          const value = details[field]
+          if (value && !prev[field].trim()) next[field] = value
+        }
+        return next
+      })
+    } catch {
+      // Vacancy-detail detection is a non-blocking convenience — tech stack detection above already succeeded.
+    } finally {
+      setLoading('idle')
+    }
   }
 
   async function saveVacancy() {
@@ -97,8 +114,8 @@ export function ReviewAndTailor() {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
-        <button type="button" onClick={readTechnologiesFromText} disabled={!notes.trim()}>
-          Read
+        <button type="button" onClick={readTechnologiesFromText} disabled={!notes.trim() || loading === 'reading'}>
+          {loading === 'reading' ? 'Reading...' : 'Read'}
         </button>
         {detectionHint && <p className="hint">{detectionHint}</p>}
       </fieldset>

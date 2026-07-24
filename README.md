@@ -1,12 +1,12 @@
 # CVHelper
 
-A local, personal tool to tailor your CV/resume to specific job vacancies. Everything runs on your machine — there is **no AI/LLM integration and no external API calls**; tech-matching and CV generation are done with local, deterministic logic.
+A local, personal tool to tailor your CV/resume to specific job vacancies. Everything runs on your machine and is local/deterministic, with one narrow exception: automatic detection of vacancy fields (company, role, seniority, work mode, location, salary) calls the Gemini API (see Prerequisites).
 
 ## What it does
 
 - **Candidate**: keep a structured profile (personal info, experience, education, tech stack, languages, expected salary).
 - **Review + Tailoring**:
-  - Paste a job posting and detect which known technologies it mentions (local catalog matching, no AI).
+  - Paste a job posting and detect which known technologies it mentions (local catalog matching, no AI), plus auto-detect company, role, seniority, work mode, location, and salary (calls the Gemini API, requires `GEMINI_API_KEY`).
   - Fill in job posting details and generate a resume draft from your Candidate profile to manually tailor per vacancy, exported as PDF.
   - **CV Tailoring panel**: a form prefilled from your Candidate profile (local copy, doesn't overwrite your saved profile) that generates a LaTeX (Harvard-style) resume and downloads it as a **compiled PDF**.
 - **History**: browse past job postings you've processed.
@@ -15,6 +15,7 @@ A local, personal tool to tailor your CV/resume to specific job vacancies. Every
 
 - [Node.js](https://nodejs.org/) 20+ and npm.
 - A local **LaTeX distribution** with `pdflatex` on your `PATH` — required only for the "CV Tailoring" panel's PDF download. Not installed via npm.
+- A **Gemini API key** — optional, only required for the "Read" button's automatic vacancy-field detection. Get one at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and set it as `GEMINI_API_KEY` in `apps/api/.env`. Without it, that one autofill fails gracefully; tech stack detection and everything else keeps working.
 
 ### Installing LaTeX (macOS) — exact commands, run in order
 
@@ -67,7 +68,7 @@ A local, personal tool to tailor your CV/resume to specific job vacancies. Every
 # clone and enter the repo, then install all workspace dependencies
 npm install
 
-# copy the API environment file (no API key needed — no AI integration)
+# copy the API environment file (GEMINI_API_KEY is optional, see Prerequisites)
 cp apps/api/.env.example apps/api/.env
 ```
 
@@ -106,11 +107,12 @@ npm run example --workspace=packages/tech-fit
 
 ```
 apps/
-  api/      Hono backend (candidate/vacancy/tailor/pdf/latex routes)
+  api/      Hono backend (candidate/vacancy/tailor/pdf/latex/extraction routes)
   web/      React + Vite frontend
 packages/
-  shared/   Shared TypeScript types (Candidate, VacancyDetails, ...)
-  tech-fit/ Local technology-detection/fit-matching algorithm (no AI)
+  shared/           Shared TypeScript types (Candidate, VacancyDetails, ...)
+  tech-fit/         Local technology-detection/fit-matching algorithm (no AI)
+  vacancy-extractor/ Vacancy-field detection (company/role/seniority/workMode/location/salary) via the Gemini API — the app's one AI call
 ```
 
 See [CLAUDE.md](CLAUDE.md) for a deeper architecture walkthrough.

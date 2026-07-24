@@ -36,6 +36,12 @@ export const api = {
       body: JSON.stringify({ vacancyId }),
     }),
 
+  extractVacancyDetails: (jobDescription: string) =>
+    request<Partial<Pick<VacancyDetails, 'company' | 'role' | 'seniority' | 'workMode' | 'location' | 'salary'>>>(
+      '/api/extraction/vacancy-details',
+      { method: 'POST', body: JSON.stringify({ jobDescription }) },
+    ),
+
   downloadLatexPdf: async (resume: CvTailoringInput): Promise<Blob> => {
     const res = await fetch('/api/latex/pdf', {
       method: 'POST',
