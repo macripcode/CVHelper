@@ -28,6 +28,7 @@ export function CvLatexPanel() {
   const [resume, setResume] = useState<CvTailoringInput>(EMPTY_CV_TAILORING_INPUT)
   const [newLinkLabel, setNewLinkLabel] = useState('')
   const [newLinkValue, setNewLinkValue] = useState('')
+  const [newTech, setNewTech] = useState('')
   const [status, setStatus] = useState<'loading' | 'idle' | 'error'>('loading')
   const [downloading, setDownloading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -68,14 +69,18 @@ export function CvLatexPanel() {
     setNewLinkValue('')
   }
 
-  function updateTechStack(value: string) {
-    setResume({
-      ...resume,
-      techStack: value
-        .split(',')
-        .map((v) => v.trim())
-        .filter(Boolean),
-    })
+  function addTech() {
+    const value = newTech.trim()
+    if (!value || resume.techStack.includes(value)) {
+      setNewTech('')
+      return
+    }
+    setResume({ ...resume, techStack: [...resume.techStack, value] })
+    setNewTech('')
+  }
+
+  function removeTech(index: number) {
+    setResume({ ...resume, techStack: resume.techStack.filter((_, i) => i !== index) })
   }
 
   function addExperience() {
@@ -220,10 +225,26 @@ export function CvLatexPanel() {
 
       <fieldset>
         <legend>Tech stack</legend>
+        {resume.techStack.length > 0 && (
+          <div className="tag-list">
+            {resume.techStack.map((tech, i) => (
+              <span className="tag" key={i}>
+                {tech}
+                <button type="button" aria-label={`Remove ${tech}`} onClick={() => removeTech(i)}>×</button>
+              </span>
+            ))}
+          </div>
+        )}
         <input
-          placeholder="Tech stack (comma-separated)"
-          value={resume.techStack.join(', ')}
-          onChange={(e) => updateTechStack(e.target.value)}
+          placeholder="Add technology and press Enter"
+          value={newTech}
+          onChange={(e) => setNewTech(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+              e.preventDefault()
+              addTech()
+            }
+          }}
         />
       </fieldset>
 
