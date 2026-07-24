@@ -58,6 +58,15 @@ legend {
   gap: 8px;
 }
 
+.date-row {
+  display: flex;
+  gap: 8px;
+}
+
+.date-row input {
+  flex: 1 1 0;
+}
+
 .cv-name-input {
   font-size: 28px;
   font-weight: 700;
@@ -148,8 +157,7 @@ button:disabled {
   gap: 8px;
 }
 
-.card.dragging,
-.grid.dragging {
+.card.dragging {
   opacity: 0.5;
 }
 

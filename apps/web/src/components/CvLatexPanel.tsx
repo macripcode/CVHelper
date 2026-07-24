@@ -334,7 +334,8 @@ export function CvLatexPanel() {
             <div className="grid">
               <input placeholder="Company" value={exp.company} onChange={(e) => updateExperience(i, 'company', e.target.value)} />
               <input placeholder="Role" value={exp.role} onChange={(e) => updateExperience(i, 'role', e.target.value)} />
-              <input placeholder="Project (optional)" value={exp.project} onChange={(e) => updateExperience(i, 'project', e.target.value)} />
+            </div>
+            <div className="date-row">
               <input placeholder="Start date" value={exp.startDate} onChange={(e) => updateExperience(i, 'startDate', e.target.value)} />
               <input placeholder="End date" value={exp.endDate} onChange={(e) => updateExperience(i, 'endDate', e.target.value)} />
             </div>
@@ -383,6 +384,8 @@ export function CvLatexPanel() {
             <div className="grid">
               <input placeholder="Institution" value={edu.institution} onChange={(e) => updateEducation(i, 'institution', e.target.value)} />
               <input placeholder="Degree" value={edu.degree} onChange={(e) => updateEducation(i, 'degree', e.target.value)} />
+            </div>
+            <div className="date-row">
               <input placeholder="Start date" value={edu.startDate} onChange={(e) => updateEducation(i, 'startDate', e.target.value)} />
               <input placeholder="End date" value={edu.endDate} onChange={(e) => updateEducation(i, 'endDate', e.target.value)} />
             </div>
@@ -395,27 +398,31 @@ export function CvLatexPanel() {
         <legend>Languages</legend>
         {resume.languages.map((lang, i) => (
           <div
-            className={`grid${draggedLanguageIndex === i ? ' dragging' : ''}`}
+            className={`card${draggedLanguageIndex === i ? ' dragging' : ''}`}
             key={i}
             onDragOver={(e) => handleLanguageDragOver(e, i)}
           >
-            <button
-              type="button"
-              className="drag-handle"
-              aria-label="Drag to reorder"
-              draggable
-              onDragStart={() => handleLanguageDragStart(i)}
-              onDragEnd={handleLanguageDragEnd}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="4" y1="8" x2="20" y2="8" />
-                <line x1="4" y1="14" x2="20" y2="14" />
-                <line x1="4" y1="20" x2="20" y2="20" />
-              </svg>
-            </button>
-            <input placeholder="Language" value={lang.language} onChange={(e) => updateLanguage(i, 'language', e.target.value)} />
-            <input placeholder="Level" value={lang.level} onChange={(e) => updateLanguage(i, 'level', e.target.value)} />
-            <button type="button" className="icon-button" aria-label="Remove language" onClick={() => removeLanguage(i)}>×</button>
+            <div className="card-header">
+              <button
+                type="button"
+                className="drag-handle"
+                aria-label="Drag to reorder"
+                draggable
+                onDragStart={() => handleLanguageDragStart(i)}
+                onDragEnd={handleLanguageDragEnd}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="8" x2="20" y2="8" />
+                  <line x1="4" y1="14" x2="20" y2="14" />
+                  <line x1="4" y1="20" x2="20" y2="20" />
+                </svg>
+              </button>
+              <button type="button" className="icon-button" aria-label="Remove language" onClick={() => removeLanguage(i)}>×</button>
+            </div>
+            <div className="grid">
+              <input placeholder="Language" value={lang.language} onChange={(e) => updateLanguage(i, 'language', e.target.value)} />
+              <input placeholder="Level" value={lang.level} onChange={(e) => updateLanguage(i, 'level', e.target.value)} />
+            </div>
           </div>
         ))}
         <button type="button" className="icon-button" aria-label="Add language" onClick={addLanguage}>+</button>
