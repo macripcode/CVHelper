@@ -8,7 +8,6 @@ export function ReviewAndTailor() {
   const [form, setForm] = useState<VacancyDetails>(EMPTY_VACANCY)
   const [notes, setNotes] = useState('')
   const [loading, setLoading] = useState<'idle' | 'reading'>('idle')
-  const [newLanguage, setNewLanguage] = useState('')
 
   function updateField<K extends keyof VacancyDetails>(key: K, value: VacancyDetails[K]) {
     setForm({ ...form, [key]: value })
@@ -16,16 +15,6 @@ export function ReviewAndTailor() {
 
   function removeTech(index: number) {
     setForm({ ...form, techStack: form.techStack.filter((_, i) => i !== index) })
-  }
-
-  function addLanguage() {
-    const value = newLanguage.trim()
-    if (!value || form.requiredLanguages.includes(value)) {
-      setNewLanguage('')
-      return
-    }
-    setForm({ ...form, requiredLanguages: [...form.requiredLanguages, value] })
-    setNewLanguage('')
   }
 
   function removeLanguage(index: number) {
@@ -49,6 +38,13 @@ export function ReviewAndTailor() {
         if (analysis.salary && !prev.salary.trim()) {
           const { currency, min, max, period } = analysis.salary
           next.salary = `${currency} ${min}-${max}/${period}`
+        }
+        if (analysis.requiredLanguages.length > 0) {
+          const merged = [...prev.requiredLanguages]
+          for (const language of analysis.requiredLanguages) {
+            if (!merged.includes(language)) merged.push(language)
+          }
+          next.requiredLanguages = merged
         }
         return next
       })
@@ -115,6 +111,7 @@ export function ReviewAndTailor() {
           <span className="field-label">Salary</span>
           <input value={form.salary} onChange={(e) => updateField('salary', e.target.value)} />
         </div>
+        <span className="field-label">Languages required</span>
         {form.requiredLanguages.length > 0 && (
           <div className="tag-list">
             {form.requiredLanguages.map((language, i) => (
@@ -125,19 +122,6 @@ export function ReviewAndTailor() {
             ))}
           </div>
         )}
-        <div className="field-row">
-          <span className="field-label">Languages required</span>
-          <input
-            value={newLanguage}
-            onChange={(e) => setNewLanguage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ',') {
-                e.preventDefault()
-                addLanguage()
-              }
-            }}
-          />
-        </div>
       </fieldset>
     </div>
   )

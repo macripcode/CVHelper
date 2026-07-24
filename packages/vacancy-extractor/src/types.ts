@@ -30,6 +30,8 @@ export interface JobPostingAnalysis {
   salary: SalaryRange | null;
   requiredExperience: number | null;
   technologies: string[];
+  /** Natural/human languages required or preferred for the role (e.g. "English", "Spanish") — not programming languages. */
+  requiredLanguages: string[];
   responsibilities: string[];
   requirements: string[];
   preferredQualifications: string[];
@@ -45,6 +47,7 @@ export const EMPTY_JOB_POSTING_ANALYSIS: JobPostingAnalysis = {
   salary: null,
   requiredExperience: null,
   technologies: [],
+  requiredLanguages: [],
   responsibilities: [],
   requirements: [],
   preferredQualifications: [],

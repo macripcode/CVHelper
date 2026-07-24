@@ -73,6 +73,7 @@ export function validateJobPostingAnalysis(rawText: string): JobPostingAnalysis 
     salary,
     requiredExperience: typeof record.requiredExperience === "number" ? record.requiredExperience : null,
     technologies: toStringArray(record.technologies),
+    requiredLanguages: toStringArray(record.requiredLanguages),
     responsibilities: toStringArray(record.responsibilities, 10),
     requirements: toStringArray(record.requirements, 10),
     preferredQualifications: toStringArray(record.preferredQualifications, 10),

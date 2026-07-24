@@ -17,6 +17,7 @@ export function buildJobPostingPrompt(jobDescription: string): string {
     "- salary: an object with currency, min, max, period (e.g. \"year\", \"month\", \"hour\"), or null if no salary is mentioned.",
     "- requiredExperience: the minimum number of years of experience required, as a number, or null if not mentioned.",
     "- technologies: a deduplicated list of the technologies mentioned in the posting.",
+    '- requiredLanguages: a deduplicated list of natural/human languages required or preferred for the role (e.g. "English", "Spanish") — NOT programming languages, those belong in technologies.',
     "- responsibilities: the main responsibilities of the role, at most 10.",
     "- requirements: the main requirements for the role, at most 10.",
     "- preferredQualifications: the desirable/nice-to-have qualifications, at most 10.",
