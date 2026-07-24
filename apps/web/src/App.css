@@ -207,6 +207,12 @@ button:disabled {
   color: var(--text);
 }
 
+.char-count {
+  align-self: flex-end;
+  font-size: 12px;
+  color: var(--text);
+}
+
 .hint.error {
   color: #e5484d;
 }

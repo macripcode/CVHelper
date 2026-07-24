@@ -308,7 +308,8 @@ export function CvLatexPanel() {
       </CollapsibleFieldset>
 
       <CollapsibleFieldset title="Summary">
-        <textarea rows={3} value={resume.summary} onChange={(e) => setResume({ ...resume, summary: e.target.value })} />
+        <textarea rows={8} value={resume.summary} onChange={(e) => setResume({ ...resume, summary: e.target.value })} />
+        <span className="char-count">{resume.summary.length} characters</span>
       </CollapsibleFieldset>
 
       <CollapsibleFieldset title="Tech stack">
