@@ -1,4 +1,5 @@
 main {
+  box-sizing: border-box;
   max-width: 1400px;
   margin: 0 auto;
   padding: 24px 20px 64px;
@@ -15,6 +16,19 @@ main {
 .two-column > * {
   flex: 1 1 420px;
   min-width: 0;
+}
+
+@media (min-width: 1200px) {
+  main {
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 24px 50px 64px;
+  }
+
+  .two-column {
+    flex-wrap: nowrap;
+  }
 }
 
 .panel {
@@ -44,6 +58,17 @@ legend {
   gap: 8px;
 }
 
+.cv-name-input {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.cv-title-input {
+  font-size: 15px;
+  color: var(--text);
+}
+
 input,
 textarea {
   font: inherit;
@@ -70,6 +95,17 @@ button {
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.icon-button {
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  line-height: 1;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card {

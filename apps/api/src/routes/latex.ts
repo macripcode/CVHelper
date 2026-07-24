@@ -1,18 +1,18 @@
 import { Hono } from "hono";
-import type { Candidate } from "@cvhelper/shared";
+import type { CvTailoringInput } from "@cvhelper/shared";
 import { candidateToLatex } from "../services/latexTemplate.js";
 import { compileLatexToPdf } from "../services/latexCompiler.js";
 
 export const latexRoutes = new Hono();
 
 interface LatexPdfBody {
-  candidate: Candidate;
+  resume: CvTailoringInput;
 }
 
 latexRoutes.post("/pdf", async (c) => {
-  const { candidate } = await c.req.json<LatexPdfBody>();
+  const { resume } = await c.req.json<LatexPdfBody>();
 
-  const texSource = candidateToLatex(candidate);
+  const texSource = candidateToLatex(resume);
 
   let pdf: Buffer;
   try {
@@ -22,7 +22,7 @@ latexRoutes.post("/pdf", async (c) => {
     return c.json({ error: message }, 500);
   }
 
-  const filename = (candidate.personal.name || "cv").trim().replace(/\s+/g, "-").toLowerCase();
+  const filename = (resume.personal.name || "cv").trim().replace(/\s+/g, "-").toLowerCase();
 
   return new Response(new Uint8Array(pdf), {
     headers: {

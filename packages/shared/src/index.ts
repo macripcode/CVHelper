@@ -73,6 +73,35 @@ export const EMPTY_CANDIDATE: Candidate = {
   expectedSalary: { amount: null, currency: "", period: "" },
 };
 
+export interface CandidateLink {
+  label: string;
+  value: string;
+}
+
+export interface CvTailoringPersonal {
+  name: string;
+  professionalTitle: string;
+  links: CandidateLink[];
+}
+
+export interface CvTailoringInput {
+  personal: CvTailoringPersonal;
+  summary: string;
+  experience: CandidateExperience[];
+  education: CandidateEducation[];
+  techStack: string[];
+  languages: CandidateLanguage[];
+}
+
+export const EMPTY_CV_TAILORING_INPUT: CvTailoringInput = {
+  personal: { name: "", professionalTitle: "", links: [] },
+  summary: "",
+  experience: [],
+  education: [],
+  techStack: [],
+  languages: [],
+};
+
 export interface VacancyDetails {
   company: string;
   role: string;

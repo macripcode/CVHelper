@@ -1,4 +1,4 @@
-import type { Candidate, CandidateExperience } from "@cvhelper/shared";
+import type { CandidateExperience, CandidateLink, CvTailoringInput } from "@cvhelper/shared";
 
 /** Escapes LaTeX special characters so arbitrary user text can't break compilation. */
 function escapeLatex(value: string): string {
@@ -11,6 +11,25 @@ function escapeLatex(value: string): string {
 
 function href(url: string, label: string): string {
   return `\\href{${url}}{${escapeLatex(label)}}`;
+}
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const URL_PATTERN = /^https?:\/\//i;
+
+/** Renders a link's value as a clickable mailto/https link when recognized, plain escaped text otherwise. */
+function renderLinkValue(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (EMAIL_PATTERN.test(trimmed)) return href(`mailto:${trimmed}`, trimmed);
+  if (URL_PATTERN.test(trimmed)) return href(trimmed, trimmed);
+  return escapeLatex(trimmed);
+}
+
+function renderLinks(links: CandidateLink[]): string {
+  return links
+    .map((link) => renderLinkValue(link.value))
+    .filter(Boolean)
+    .join(" \\,|\\, ");
 }
 
 function dateRange(start: string, end: string): string {
@@ -91,7 +110,7 @@ const LATEX_PREAMBLE = `% =========================
 
 \\begin{document}`;
 
-export function candidateToLatex(candidate: Candidate): string {
+export function candidateToLatex(candidate: CvTailoringInput): string {
   const { personal } = candidate;
   const sections: string[] = [LATEX_PREAMBLE];
 
@@ -99,14 +118,9 @@ export function candidateToLatex(candidate: Candidate): string {
   sections.push(`\\name{${escapeLatex(personal.name || "Untitled candidate")}}`);
   if (personal.professionalTitle) sections.push(`\\role{${escapeLatex(personal.professionalTitle)}}`);
 
-  const contactParts: string[] = [];
-  if (personal.location) contactParts.push(escapeLatex(personal.location));
-  if (personal.email) contactParts.push(href(`mailto:${personal.email}`, personal.email));
-  if (personal.linkedin) contactParts.push(href(personal.linkedin, personal.linkedin));
-  if (personal.github) contactParts.push(href(personal.github, personal.github));
-  if (personal.website) contactParts.push(href(personal.website, personal.website));
-  if (contactParts.length > 0) {
-    sections.push(`\\contact{ ${contactParts.join(" \\,|\\, ")} }`);
+  const contactLine = renderLinks(personal.links);
+  if (contactLine) {
+    sections.push(`\\contact{ ${contactLine} }`);
   }
 
   if (candidate.summary) {

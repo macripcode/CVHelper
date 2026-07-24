@@ -1,4 +1,4 @@
-import type { Candidate, VacancyDetails, VacancyRecord } from '@cvhelper/shared'
+import type { Candidate, CvTailoringInput, VacancyDetails, VacancyRecord } from '@cvhelper/shared'
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -36,11 +36,11 @@ export const api = {
       body: JSON.stringify({ vacancyId }),
     }),
 
-  downloadLatexPdf: async (candidate: Candidate): Promise<Blob> => {
+  downloadLatexPdf: async (resume: CvTailoringInput): Promise<Blob> => {
     const res = await fetch('/api/latex/pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ candidate }),
+      body: JSON.stringify({ resume }),
     })
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))
