@@ -31,6 +31,7 @@ export function CvLatexPanel() {
   const [newLinkValue, setNewLinkValue] = useState('')
   const [newTech, setNewTech] = useState('')
   const [draggedExperienceIndex, setDraggedExperienceIndex] = useState<number | null>(null)
+  const [draggedEducationIndex, setDraggedEducationIndex] = useState<number | null>(null)
   const [status, setStatus] = useState<'loading' | 'idle' | 'error'>('loading')
   const [downloading, setDownloading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -138,6 +139,24 @@ export function CvLatexPanel() {
 
   function removeEducation(index: number) {
     setResume({ ...resume, education: resume.education.filter((_, i) => i !== index) })
+  }
+
+  function handleEducationDragStart(index: number) {
+    setDraggedEducationIndex(index)
+  }
+
+  function handleEducationDragOver(e: DragEvent, index: number) {
+    e.preventDefault()
+    if (draggedEducationIndex === null || draggedEducationIndex === index) return
+    const education = [...resume.education]
+    const [moved] = education.splice(draggedEducationIndex, 1)
+    education.splice(index, 0, moved)
+    setDraggedEducationIndex(index)
+    setResume({ ...resume, education })
+  }
+
+  function handleEducationDragEnd() {
+    setDraggedEducationIndex(null)
   }
 
   function addLanguage() {
@@ -320,14 +339,34 @@ export function CvLatexPanel() {
       <fieldset>
         <legend>Education</legend>
         {resume.education.map((edu, i) => (
-          <div className="card" key={i}>
+          <div
+            className={`card${draggedEducationIndex === i ? ' dragging' : ''}`}
+            key={i}
+            onDragOver={(e) => handleEducationDragOver(e, i)}
+          >
+            <div className="card-header">
+              <button
+                type="button"
+                className="drag-handle"
+                aria-label="Drag to reorder"
+                draggable
+                onDragStart={() => handleEducationDragStart(i)}
+                onDragEnd={handleEducationDragEnd}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="8" x2="20" y2="8" />
+                  <line x1="4" y1="14" x2="20" y2="14" />
+                  <line x1="4" y1="20" x2="20" y2="20" />
+                </svg>
+              </button>
+              <button type="button" className="icon-button" aria-label="Remove education" onClick={() => removeEducation(i)}>×</button>
+            </div>
             <div className="grid">
               <input placeholder="Institution" value={edu.institution} onChange={(e) => updateEducation(i, 'institution', e.target.value)} />
               <input placeholder="Degree" value={edu.degree} onChange={(e) => updateEducation(i, 'degree', e.target.value)} />
               <input placeholder="Start date" value={edu.startDate} onChange={(e) => updateEducation(i, 'startDate', e.target.value)} />
               <input placeholder="End date" value={edu.endDate} onChange={(e) => updateEducation(i, 'endDate', e.target.value)} />
             </div>
-            <button type="button" className="icon-button" aria-label="Remove education" onClick={() => removeEducation(i)}>×</button>
           </div>
         ))}
         <button type="button" className="icon-button" aria-label="Add education" onClick={addEducation}>+</button>
