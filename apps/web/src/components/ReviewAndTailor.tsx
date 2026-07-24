@@ -13,6 +13,7 @@ export function ReviewAndTailor() {
   const [error, setError] = useState<string | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [detectionHint, setDetectionHint] = useState<string | null>(null)
+  const [newLanguage, setNewLanguage] = useState('')
 
   function updateField<K extends keyof VacancyDetails>(key: K, value: VacancyDetails[K]) {
     setForm({ ...form, [key]: value })
@@ -30,6 +31,20 @@ export function ReviewAndTailor() {
 
   function removeTech(index: number) {
     setForm({ ...form, techStack: form.techStack.filter((_, i) => i !== index) })
+  }
+
+  function addLanguage() {
+    const value = newLanguage.trim()
+    if (!value || form.requiredLanguages.includes(value)) {
+      setNewLanguage('')
+      return
+    }
+    setForm({ ...form, requiredLanguages: [...form.requiredLanguages, value] })
+    setNewLanguage('')
+  }
+
+  function removeLanguage(index: number) {
+    setForm({ ...form, requiredLanguages: form.requiredLanguages.filter((_, i) => i !== index) })
   }
 
   async function readTechnologiesFromText() {
@@ -131,6 +146,27 @@ export function ReviewAndTailor() {
             ))}
           </div>
         )}
+        {form.requiredLanguages.length > 0 && (
+          <div className="tag-list">
+            {form.requiredLanguages.map((language, i) => (
+              <span className="tag" key={i}>
+                {language}
+                <button type="button" aria-label={`Remove ${language}`} onClick={() => removeLanguage(i)}>×</button>
+              </span>
+            ))}
+          </div>
+        )}
+        <input
+          placeholder="Add required language and press Enter"
+          value={newLanguage}
+          onChange={(e) => setNewLanguage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+              e.preventDefault()
+              addLanguage()
+            }
+          }}
+        />
         <div className="grid">
           <input placeholder="Company" value={form.company} onChange={(e) => updateField('company', e.target.value)} />
           <input placeholder="Role" value={form.role} onChange={(e) => updateField('role', e.target.value)} />

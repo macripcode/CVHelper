@@ -110,6 +110,7 @@ export interface VacancyDetails {
   location: string;
   requiredExperience: string;
   techStack: string[];
+  requiredLanguages: string[];
   salary: string;
   responsibilities: string[];
   requirements: string[];
@@ -123,6 +124,7 @@ export const EMPTY_VACANCY: VacancyDetails = {
   location: "",
   requiredExperience: "",
   techStack: [],
+  requiredLanguages: [],
   salary: "",
   responsibilities: [],
   requirements: [],
