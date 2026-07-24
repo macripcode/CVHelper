@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { DragEvent } from 'react'
 import type { CvTailoringInput } from '@cvhelper/shared'
 import { EMPTY_CV_TAILORING_INPUT } from '@cvhelper/shared'
 import { api } from '../api'
@@ -29,6 +30,7 @@ export function CvLatexPanel() {
   const [newLinkLabel, setNewLinkLabel] = useState('')
   const [newLinkValue, setNewLinkValue] = useState('')
   const [newTech, setNewTech] = useState('')
+  const [draggedExperienceIndex, setDraggedExperienceIndex] = useState<number | null>(null)
   const [status, setStatus] = useState<'loading' | 'idle' | 'error'>('loading')
   const [downloading, setDownloading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -101,6 +103,24 @@ export function CvLatexPanel() {
 
   function removeExperience(index: number) {
     setResume({ ...resume, experience: resume.experience.filter((_, i) => i !== index) })
+  }
+
+  function handleExperienceDragStart(index: number) {
+    setDraggedExperienceIndex(index)
+  }
+
+  function handleExperienceDragOver(e: DragEvent, index: number) {
+    e.preventDefault()
+    if (draggedExperienceIndex === null || draggedExperienceIndex === index) return
+    const experience = [...resume.experience]
+    const [moved] = experience.splice(draggedExperienceIndex, 1)
+    experience.splice(index, 0, moved)
+    setDraggedExperienceIndex(index)
+    setResume({ ...resume, experience })
+  }
+
+  function handleExperienceDragEnd() {
+    setDraggedExperienceIndex(null)
   }
 
   function addEducation() {
@@ -251,7 +271,28 @@ export function CvLatexPanel() {
       <fieldset>
         <legend>Work experience</legend>
         {resume.experience.map((exp, i) => (
-          <div className="card" key={i}>
+          <div
+            className={`card${draggedExperienceIndex === i ? ' dragging' : ''}`}
+            key={i}
+            onDragOver={(e) => handleExperienceDragOver(e, i)}
+          >
+            <div className="card-header">
+              <button
+                type="button"
+                className="drag-handle"
+                aria-label="Drag to reorder"
+                draggable
+                onDragStart={() => handleExperienceDragStart(i)}
+                onDragEnd={handleExperienceDragEnd}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="8" x2="20" y2="8" />
+                  <line x1="4" y1="14" x2="20" y2="14" />
+                  <line x1="4" y1="20" x2="20" y2="20" />
+                </svg>
+              </button>
+              <button type="button" className="icon-button" aria-label="Remove experience" onClick={() => removeExperience(i)}>×</button>
+            </div>
             <div className="grid">
               <input placeholder="Company" value={exp.company} onChange={(e) => updateExperience(i, 'company', e.target.value)} />
               <input placeholder="Role" value={exp.role} onChange={(e) => updateExperience(i, 'role', e.target.value)} />
@@ -271,7 +312,6 @@ export function CvLatexPanel() {
               value={exp.achievements.join('\n')}
               onChange={(e) => updateExperience(i, 'achievements', e.target.value.split('\n').filter(Boolean))}
             />
-            <button type="button" className="icon-button" aria-label="Remove experience" onClick={() => removeExperience(i)}>×</button>
           </div>
         ))}
         <button type="button" className="icon-button" aria-label="Add experience" onClick={addExperience}>+</button>
