@@ -1,8 +1,20 @@
 main {
-  max-width: 900px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 24px 20px 64px;
   text-align: left;
+}
+
+.two-column {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.two-column > * {
+  flex: 1 1 420px;
+  min-width: 0;
 }
 
 .tabs {

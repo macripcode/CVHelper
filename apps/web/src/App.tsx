@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import { CandidateForm } from './components/CandidateForm'
 import { ReviewAndTailor } from './components/ReviewAndTailor'
+import { CvLatexPanel } from './components/CvLatexPanel'
 import { HistoryList } from './components/HistoryList'
 
 type Tab = 'candidate' | 'vacancy' | 'history'
@@ -26,7 +27,12 @@ function App() {
       </nav>
 
       {tab === 'candidate' && <CandidateForm />}
-      {tab === 'vacancy' && <ReviewAndTailor onProcessed={() => setHistoryKey((k) => k + 1)} />}
+      {tab === 'vacancy' && (
+        <div className="two-column">
+          <ReviewAndTailor onProcessed={() => setHistoryKey((k) => k + 1)} />
+          <CvLatexPanel />
+        </div>
+      )}
       {tab === 'history' && <HistoryList refreshKey={historyKey} />}
     </main>
   )

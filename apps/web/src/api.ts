@@ -39,4 +39,17 @@ export const api = {
     }),
 
   listHistory: () => request<VacancySummary[]>('/api/history'),
+
+  downloadLatexPdf: async (candidate: Candidate): Promise<Blob> => {
+    const res = await fetch('/api/latex/pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ candidate }),
+    })
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      throw new Error(body.error ?? `Error ${res.status}`)
+    }
+    return res.blob()
+  },
 }

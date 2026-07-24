@@ -3,45 +3,35 @@ import type { Candidate } from '@cvhelper/shared'
 import { EMPTY_CANDIDATE } from '@cvhelper/shared'
 import { api } from '../api'
 
-export function CandidateForm() {
+export function CvLatexPanel() {
   const [candidate, setCandidate] = useState<Candidate>(EMPTY_CANDIDATE)
-  const [status, setStatus] = useState<'idle' | 'loading' | 'saving' | 'saved' | 'error'>('loading')
-  const [loadError, setLoadError] = useState(false)
+  const [status, setStatus] = useState<'loading' | 'idle' | 'error'>('loading')
+  const [downloading, setDownloading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   function loadCandidate() {
     setStatus('loading')
-    setLoadError(false)
     api
       .getCandidate()
       .then((data) => {
         setCandidate(data)
         setStatus('idle')
       })
-      .catch(() => setLoadError(true))
+      .catch(() => setStatus('error'))
   }
 
   useEffect(() => {
     loadCandidate()
   }, [])
 
-  async function save() {
-    setStatus('saving')
-    try {
-      await api.saveCandidate(candidate)
-      setStatus('saved')
-    } catch {
-      setStatus('error')
-    }
-  }
-
   function updatePersonal<K extends keyof Candidate['personal']>(key: K, value: Candidate['personal'][K]) {
     setCandidate({ ...candidate, personal: { ...candidate.personal, [key]: value } })
   }
 
-  function updateListField(key: 'techStack' | 'softSkills', value: string) {
+  function updateTechStack(value: string) {
     setCandidate({
       ...candidate,
-      [key]: value
+      techStack: value
         .split(',')
         .map((v) => v.trim())
         .filter(Boolean),
@@ -99,12 +89,30 @@ export function CandidateForm() {
     setCandidate({ ...candidate, languages: candidate.languages.filter((_, i) => i !== index) })
   }
 
+  async function downloadPdf() {
+    setError(null)
+    setDownloading(true)
+    try {
+      const blob = await api.downloadLatexPdf(candidate)
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${(candidate.personal.name || 'cv').trim().replace(/\s+/g, '-').toLowerCase()}.pdf`
+      link.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error generating the PDF')
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   if (status === 'loading') return <p>Loading profile...</p>
 
-  if (loadError) {
+  if (status === 'error') {
     return (
       <div className="panel">
-        <h2>Candidate</h2>
+        <h2>CV Tailoring</h2>
         <p className="hint error">Could not load your Candidate profile. Is the API server running?</p>
         <button type="button" onClick={loadCandidate}>Retry</button>
       </div>
@@ -113,16 +121,18 @@ export function CandidateForm() {
 
   return (
     <div className="panel">
-      <h2>Candidate</h2>
+      <h2>CV Tailoring</h2>
+      <p className="hint">
+        Prefilled from your Candidate profile. Changes here are local to this download and won't update your saved profile.
+      </p>
 
       <fieldset>
         <legend>Personal details</legend>
         <div className="grid">
           <input placeholder="Name" value={candidate.personal.name} onChange={(e) => updatePersonal('name', e.target.value)} />
           <input placeholder="Professional title" value={candidate.personal.professionalTitle} onChange={(e) => updatePersonal('professionalTitle', e.target.value)} />
-          <input placeholder="Email" value={candidate.personal.email} onChange={(e) => updatePersonal('email', e.target.value)} />
-          <input placeholder="Phone" value={candidate.personal.phone} onChange={(e) => updatePersonal('phone', e.target.value)} />
           <input placeholder="Location" value={candidate.personal.location} onChange={(e) => updatePersonal('location', e.target.value)} />
+          <input placeholder="Email" value={candidate.personal.email} onChange={(e) => updatePersonal('email', e.target.value)} />
           <input placeholder="LinkedIn" value={candidate.personal.linkedin} onChange={(e) => updatePersonal('linkedin', e.target.value)} />
           <input placeholder="GitHub" value={candidate.personal.github} onChange={(e) => updatePersonal('github', e.target.value)} />
           <input placeholder="Website" value={candidate.personal.website} onChange={(e) => updatePersonal('website', e.target.value)} />
@@ -130,11 +140,16 @@ export function CandidateForm() {
       </fieldset>
 
       <fieldset>
-        <legend>Professional summary</legend>
-        <textarea
-          rows={3}
-          value={candidate.summary}
-          onChange={(e) => setCandidate({ ...candidate, summary: e.target.value })}
+        <legend>Summary</legend>
+        <textarea rows={3} value={candidate.summary} onChange={(e) => setCandidate({ ...candidate, summary: e.target.value })} />
+      </fieldset>
+
+      <fieldset>
+        <legend>Tech stack</legend>
+        <input
+          placeholder="Tech stack (comma-separated)"
+          value={candidate.techStack.join(', ')}
+          onChange={(e) => updateTechStack(e.target.value)}
         />
       </fieldset>
 
@@ -146,8 +161,8 @@ export function CandidateForm() {
               <input placeholder="Company" value={exp.company} onChange={(e) => updateExperience(i, 'company', e.target.value)} />
               <input placeholder="Role" value={exp.role} onChange={(e) => updateExperience(i, 'role', e.target.value)} />
               <input placeholder="Project (optional)" value={exp.project} onChange={(e) => updateExperience(i, 'project', e.target.value)} />
-              <input placeholder="Start date (YYYY-MM)" value={exp.startDate} onChange={(e) => updateExperience(i, 'startDate', e.target.value)} />
-              <input placeholder="End date (YYYY-MM or Present)" value={exp.endDate} onChange={(e) => updateExperience(i, 'endDate', e.target.value)} />
+              <input placeholder="Start date" value={exp.startDate} onChange={(e) => updateExperience(i, 'startDate', e.target.value)} />
+              <input placeholder="End date" value={exp.endDate} onChange={(e) => updateExperience(i, 'endDate', e.target.value)} />
             </div>
             <textarea
               rows={2}
@@ -156,7 +171,7 @@ export function CandidateForm() {
               onChange={(e) => updateExperience(i, 'description', e.target.value)}
             />
             <textarea
-              rows={2}
+              rows={3}
               placeholder="Achievements (one per line)"
               value={exp.achievements.join('\n')}
               onChange={(e) => updateExperience(i, 'achievements', e.target.value.split('\n').filter(Boolean))}
@@ -195,52 +210,10 @@ export function CandidateForm() {
         <button type="button" onClick={addLanguage}>+ Add language</button>
       </fieldset>
 
-      <fieldset>
-        <legend>Tech stack and soft skills</legend>
-        <input
-          placeholder="Tech stack (comma-separated)"
-          value={candidate.techStack.join(', ')}
-          onChange={(e) => updateListField('techStack', e.target.value)}
-        />
-        <input
-          placeholder="Soft skills (comma-separated)"
-          value={candidate.softSkills.join(', ')}
-          onChange={(e) => updateListField('softSkills', e.target.value)}
-        />
-      </fieldset>
-
-      <fieldset>
-        <legend>Expected salary</legend>
-        <div className="grid">
-          <input
-            type="number"
-            placeholder="Amount"
-            value={candidate.expectedSalary.amount ?? ''}
-            onChange={(e) =>
-              setCandidate({
-                ...candidate,
-                expectedSalary: { ...candidate.expectedSalary, amount: e.target.value ? Number(e.target.value) : null },
-              })
-            }
-          />
-          <input
-            placeholder="Currency"
-            value={candidate.expectedSalary.currency}
-            onChange={(e) => setCandidate({ ...candidate, expectedSalary: { ...candidate.expectedSalary, currency: e.target.value } })}
-          />
-          <input
-            placeholder="Period (monthly/yearly)"
-            value={candidate.expectedSalary.period}
-            onChange={(e) => setCandidate({ ...candidate, expectedSalary: { ...candidate.expectedSalary, period: e.target.value } })}
-          />
-        </div>
-      </fieldset>
-
-      <button type="button" onClick={save} disabled={status === 'saving'}>
-        {status === 'saving' ? 'Saving...' : 'Save profile'}
+      <button type="button" onClick={downloadPdf} disabled={downloading}>
+        {downloading ? 'Generating PDF...' : 'Download PDF'}
       </button>
-      {status === 'saved' && <span className="hint">Saved ✓</span>}
-      {status === 'error' && <span className="hint error">Error saving profile</span>}
+      {error && <p className="hint error">{error}</p>}
     </div>
   )
 }

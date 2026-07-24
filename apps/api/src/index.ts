@@ -8,6 +8,7 @@ import { vacancyRoutes } from "./routes/vacancy.js";
 import { tailorRoutes } from "./routes/tailor.js";
 import { pdfRoutes } from "./routes/pdf.js";
 import { historyRoutes } from "./routes/history.js";
+import { latexRoutes } from "./routes/latex.js";
 
 const app = new Hono();
 
@@ -23,6 +24,7 @@ app.route("/api/vacancy", vacancyRoutes);
 app.route("/api/tailor", tailorRoutes);
 app.route("/api/pdf", pdfRoutes);
 app.route("/api/history", historyRoutes);
+app.route("/api/latex", latexRoutes);
 
 const port = Number(process.env.PORT ?? 3001);
 
