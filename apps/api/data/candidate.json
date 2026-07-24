@@ -1,0 +1,88 @@
+{
+  "personal": {
+    "name": "Jordan Alex Rivera",
+    "professionalTitle": "Senior Software Engineer - Backend Focused",
+    "email": "jordan.rivera@example.com",
+    "phone": "",
+    "location": "Austin, TX | Remote",
+    "linkedin": "https://www.linkedin.com/in/jordan-rivera-example/",
+    "github": "https://github.com/jordanrivera-example",
+    "website": "https://jordanrivera.example.dev"
+  },
+  "summary": "Backend-focused Software Engineer with +6 years of experience designing and operating distributed systems. Strong expertise in Java, Spring Boot, PostgreSQL, and cloud infrastructure, with a track record of improving reliability and reducing latency in high-traffic production services. Experienced in mentoring engineers and collaborating with cross-functional teams to ship scalable solutions.",
+  "experience": [
+    {
+      "company": "Initech",
+      "role": "Senior Software Engineer",
+      "project": "Billing Platform Modernization",
+      "startDate": "2021",
+      "endDate": "Present",
+      "description": "Remote | Full-time. Led the migration of a legacy billing system to a microservices architecture.",
+      "achievements": [
+        "Designed and implemented event-driven microservices using Spring Boot and Kafka, reducing invoice processing time by 40%.",
+        "Introduced automated integration tests, cutting production incidents related to billing by half.",
+        "Mentored two junior engineers and led fortnightly architecture review sessions.",
+        "Migrated core services from on-premise servers to AWS, improving uptime to 99.95%."
+      ]
+    },
+    {
+      "company": "Initech",
+      "role": "Senior Software Engineer",
+      "project": "Internal Developer Platform",
+      "startDate": "2021",
+      "endDate": "Present",
+      "description": "Remote | Full-time. Built internal tooling to standardize service deployment across teams.",
+      "achievements": [
+        "Built a self-service deployment pipeline used by 12 engineering teams.",
+        "Reduced average deployment time from 45 minutes to under 8 minutes.",
+        "Documented internal APIs and onboarding guides, improving new-hire ramp-up time."
+      ]
+    },
+    {
+      "company": "Globex Corp",
+      "role": "Software Engineer",
+      "project": "",
+      "startDate": "2018",
+      "endDate": "2021",
+      "description": "Hybrid | Full-time. Developed backend services for an e-commerce order management platform.",
+      "achievements": [
+        "Built and maintained REST APIs handling over 2 million requests per day.",
+        "Optimized PostgreSQL queries, reducing average response time by 30%.",
+        "Collaborated with product and QA teams to deliver features on a bi-weekly release cycle."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "State University",
+      "degree": "Bachelor's Degree in Computer Science",
+      "startDate": "",
+      "endDate": "2018"
+    }
+  ],
+  "techStack": [
+    "Java",
+    "Spring Boot",
+    "PostgreSQL",
+    "Docker",
+    "Kubernetes",
+    "AWS",
+    "Kafka",
+    "Python",
+    "REST API",
+    "Git"
+  ],
+  "softSkills": [
+    "Team leadership and mentoring",
+    "Cross-functional collaboration"
+  ],
+  "languages": [
+    { "language": "English", "level": "Native" },
+    { "language": "Spanish", "level": "Professional Working Proficiency" }
+  ],
+  "expectedSalary": {
+    "amount": null,
+    "currency": "",
+    "period": ""
+  }
+}

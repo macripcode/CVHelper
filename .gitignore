@@ -7,4 +7,5 @@ dist-ssr
 .DS_Store
 .turbo
 coverage
-apps/api/data
+apps/api/data/*
+!apps/api/data/candidate.json
