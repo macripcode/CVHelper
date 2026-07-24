@@ -267,4 +267,22 @@ export const techCatalog: TechnologyDefinition[] = [
   { name: "AWS CodePipeline", aliases: ["AWS CodePipeline", "CodePipeline"], category: "cicd" },
   { name: "AWS CodeBuild", aliases: ["AWS CodeBuild", "CodeBuild"], category: "cicd" },
   { name: "Google Cloud Build", aliases: ["Google Cloud Build", "Cloud Build"], category: "cicd" },
+
+  // AI coding tools
+  { name: "GitHub Copilot", aliases: ["GitHub Copilot", "Github Copilot", "Copilot"], category: "ai-tools" },
+  { name: "Cursor", aliases: ["Cursor", "Cursor AI", "Cursor IDE"], category: "ai-tools" },
+  { name: "Claude Code", aliases: ["Claude Code"], category: "ai-tools" },
+  { name: "Claude", aliases: ["Claude", "Anthropic Claude"], category: "ai-tools" },
+  { name: "ChatGPT", aliases: ["ChatGPT", "OpenAI GPT", "GPT-4", "GPT-4o"], category: "ai-tools" },
+  { name: "Amazon Q Developer", aliases: ["Amazon Q Developer", "Amazon CodeWhisperer", "CodeWhisperer"], category: "ai-tools" },
+  { name: "Gemini Code Assist", aliases: ["Gemini Code Assist", "Google Gemini Code Assist"], category: "ai-tools" },
+  { name: "JetBrains AI Assistant", aliases: ["JetBrains AI Assistant", "JetBrains AI"], category: "ai-tools" },
+  { name: "Tabnine", aliases: ["Tabnine"], category: "ai-tools" },
+  { name: "Codeium", aliases: ["Codeium"], category: "ai-tools" },
+  { name: "Windsurf", aliases: ["Windsurf", "Windsurf Editor", "Windsurf IDE"], category: "ai-tools" },
+  { name: "Sourcegraph Cody", aliases: ["Sourcegraph Cody", "Cody AI"], category: "ai-tools" },
+  { name: "Replit AI", aliases: ["Replit AI", "Replit Ghostwriter"], category: "ai-tools" },
+  { name: "Devin", aliases: ["Devin AI", "Cognition Devin"], category: "ai-tools" },
+  { name: "Continue.dev", aliases: ["Continue.dev"], category: "ai-tools" },
+  { name: "Aider", aliases: ["Aider AI", "Aider CLI"], category: "ai-tools" },
 ];
