@@ -8,7 +8,6 @@ export function ReviewAndTailor() {
   const [form, setForm] = useState<VacancyDetails>(EMPTY_VACANCY)
   const [notes, setNotes] = useState('')
   const [loading, setLoading] = useState<'idle' | 'reading'>('idle')
-  const [detectionHint, setDetectionHint] = useState<string | null>(null)
   const [newLanguage, setNewLanguage] = useState('')
 
   function updateField<K extends keyof VacancyDetails>(key: K, value: VacancyDetails[K]) {
@@ -36,11 +35,6 @@ export function ReviewAndTailor() {
   async function readTechnologiesFromText() {
     const detected = extractJobTechnologies(notes, techCatalog)
     setForm({ ...form, techStack: detected })
-    setDetectionHint(
-      detected.length > 0
-        ? `Detected ${detected.length} technolog${detected.length === 1 ? 'y' : 'ies'}: ${detected.join(', ')}`
-        : 'No known technologies were detected in this text.',
-    )
 
     setLoading('reading')
     try {
@@ -78,10 +72,14 @@ export function ReviewAndTailor() {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
-        <button type="button" onClick={readTechnologiesFromText} disabled={!notes.trim() || loading === 'reading'}>
+        <button
+          type="button"
+          className="read-button"
+          onClick={readTechnologiesFromText}
+          disabled={!notes.trim() || loading === 'reading'}
+        >
           {loading === 'reading' ? 'Reading...' : 'Read'}
         </button>
-        {detectionHint && <p className="hint">{detectionHint}</p>}
       </fieldset>
       <fieldset>
         <legend>Job posting details</legend>
