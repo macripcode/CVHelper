@@ -1,8 +1,41 @@
 import { useEffect, useState } from 'react'
-import type { DragEvent } from 'react'
+import type { DragEvent, ReactNode } from 'react'
 import type { CvTailoringInput } from '@cvhelper/shared'
 import { EMPTY_CV_TAILORING_INPUT } from '@cvhelper/shared'
 import { api } from '../api'
+
+function CollapsibleFieldset({ title, children }: { title: string; children: ReactNode }) {
+  const [collapsed, setCollapsed] = useState(false)
+  return (
+    <fieldset>
+      <legend>
+        <button
+          type="button"
+          className="collapse-toggle"
+          aria-expanded={!collapsed}
+          onClick={() => setCollapsed((value) => !value)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ transform: collapsed ? 'rotate(-90deg)' : 'none' }}
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+          {title}
+        </button>
+      </legend>
+      <div style={{ display: collapsed ? 'none' : 'flex', flexDirection: 'column', gap: 8 }}>{children}</div>
+    </fieldset>
+  )
+}
 
 function toTailoringInput(candidate: Awaited<ReturnType<typeof api.getCandidate>>): CvTailoringInput {
   const { personal } = candidate
@@ -229,8 +262,7 @@ export function CvLatexPanel() {
         Prefilled from your Candidate profile. Changes here are local to this download and won't update your saved profile.
       </p>
 
-      <fieldset>
-        <legend>Header</legend>
+      <CollapsibleFieldset title="Header">
         <input
           className="cv-name-input"
           placeholder="Name"
@@ -243,10 +275,9 @@ export function CvLatexPanel() {
           value={resume.personal.professionalTitle}
           onChange={(e) => updatePersonal('professionalTitle', e.target.value)}
         />
-      </fieldset>
+      </CollapsibleFieldset>
 
-      <fieldset>
-        <legend>Links</legend>
+      <CollapsibleFieldset title="Links">
         {resume.personal.links.map((link, i) => (
           <div className="grid" key={i}>
             <input placeholder="Field name" value={link.label} onChange={(e) => updateLink(i, 'label', e.target.value)} />
@@ -274,15 +305,13 @@ export function CvLatexPanel() {
             )}
           </button>
         </div>
-      </fieldset>
+      </CollapsibleFieldset>
 
-      <fieldset>
-        <legend>Summary</legend>
+      <CollapsibleFieldset title="Summary">
         <textarea rows={3} value={resume.summary} onChange={(e) => setResume({ ...resume, summary: e.target.value })} />
-      </fieldset>
+      </CollapsibleFieldset>
 
-      <fieldset>
-        <legend>Tech stack</legend>
+      <CollapsibleFieldset title="Tech stack">
         {resume.techStack.length > 0 && (
           <div className="tag-list">
             {resume.techStack.map((tech, i) => (
@@ -304,10 +333,9 @@ export function CvLatexPanel() {
             }
           }}
         />
-      </fieldset>
+      </CollapsibleFieldset>
 
-      <fieldset>
-        <legend>Work experience</legend>
+      <CollapsibleFieldset title="Work experience">
         {resume.experience.map((exp, i) => (
           <div
             className={`card${draggedExperienceIndex === i ? ' dragging' : ''}`}
@@ -354,10 +382,9 @@ export function CvLatexPanel() {
           </div>
         ))}
         <button type="button" className="icon-button" aria-label="Add experience" onClick={addExperience}>+</button>
-      </fieldset>
+      </CollapsibleFieldset>
 
-      <fieldset>
-        <legend>Education</legend>
+      <CollapsibleFieldset title="Education">
         {resume.education.map((edu, i) => (
           <div
             className={`card${draggedEducationIndex === i ? ' dragging' : ''}`}
@@ -392,10 +419,9 @@ export function CvLatexPanel() {
           </div>
         ))}
         <button type="button" className="icon-button" aria-label="Add education" onClick={addEducation}>+</button>
-      </fieldset>
+      </CollapsibleFieldset>
 
-      <fieldset>
-        <legend>Languages</legend>
+      <CollapsibleFieldset title="Languages">
         {resume.languages.map((lang, i) => (
           <div
             className={`card${draggedLanguageIndex === i ? ' dragging' : ''}`}
@@ -426,7 +452,7 @@ export function CvLatexPanel() {
           </div>
         ))}
         <button type="button" className="icon-button" aria-label="Add language" onClick={addLanguage}>+</button>
-      </fieldset>
+      </CollapsibleFieldset>
 
       <button type="button" onClick={downloadPdf} disabled={downloading}>
         {downloading ? 'Generating PDF...' : 'Download PDF'}
