@@ -16,28 +16,50 @@ A local, personal tool to tailor your CV/resume to specific job vacancies. Every
 - [Node.js](https://nodejs.org/) 20+ and npm.
 - A local **LaTeX distribution** with `pdflatex` on your `PATH` — required only for the "CV Tailoring" panel's PDF download. Not installed via npm.
 
-### Installing LaTeX (macOS)
+### Installing LaTeX (macOS) — exact commands, run in order
 
-Install BasicTeX (lightweight, ~100 MB) via Homebrew instead of full MacTeX (~5 GB):
+1. Install BasicTeX (lightweight, ~100 MB) via Homebrew instead of full MacTeX (~5 GB). This step asks for your macOS password (the installer runs as `sudo` internally):
 
-```bash
-brew install --cask basictex
-```
+   ```bash
+   brew install --cask basictex
+   ```
 
-Restart your terminal (or run `eval "$(/usr/libexec/path_helper)"`) so `pdflatex` is on your `PATH`, then verify:
+2. Load the updated `PATH` into your current terminal session (or open a new terminal window instead):
 
-```bash
-which pdflatex
-```
+   ```bash
+   eval "$(/usr/libexec/path_helper)"
+   ```
 
-BasicTeX ships a minimal package set. This project's LaTeX template additionally needs `enumitem` and `titlesec`, which are **not** included by default — install them with:
+3. Verify `pdflatex` is now found:
 
-```bash
-sudo tlmgr update --self
-sudo tlmgr install enumitem titlesec
-```
+   ```bash
+   which pdflatex
+   # -> /Library/TeX/texbin/pdflatex
+   ```
 
-> If you ever see `pdflatex was not found on this machine` after just installing BasicTeX, or a `File 'enumitem.sty'/'titlesec.sty' not found` compilation error, it means one of the two steps above wasn't done yet. After installing/updating LaTeX packages, **restart `npm run dev:api`** so the API process picks up the updated `PATH`.
+4. BasicTeX ships a minimal package set and is missing two packages this project's LaTeX template needs. Install them with `tlmgr` (asks for your macOS password again):
+
+   ```bash
+   sudo tlmgr update --self
+   sudo tlmgr install enumitem titlesec
+   ```
+
+5. Verify both packages are now found:
+
+   ```bash
+   kpsewhich enumitem.sty
+   kpsewhich titlesec.sty
+   # both should print a path; empty output means it's still missing
+   ```
+
+6. If `npm run dev:api` was already running before you did the steps above, **restart it** — the running process won't pick up the updated `PATH` on its own:
+
+   ```bash
+   # Ctrl+C in the terminal running dev:api, then:
+   npm run dev:api
+   ```
+
+> Symptom → cause: `pdflatex was not found on this machine` means step 1–3 weren't done (or the API wasn't restarted after). `File 'enumitem.sty'/'titlesec.sty' not found` during compilation means step 4–5 weren't done (or the API wasn't restarted after).
 
 ## Installation
 
