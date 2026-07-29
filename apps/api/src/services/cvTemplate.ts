@@ -23,11 +23,17 @@ export function candidateToMarkdown(candidate: Candidate): string {
     lines.push("## Experience");
     for (const exp of candidate.experience) {
       const title = [exp.role, exp.company].filter(Boolean).join(" — ");
-      const heading = exp.project ? `${title} (${exp.project})` : title;
       const dates = [exp.startDate, exp.endDate].filter(Boolean).join(" - ");
-      lines.push(`### ${heading}${dates ? ` | ${dates}` : ""}`);
+      lines.push(`### ${title}${dates ? ` | ${dates}` : ""}`);
       if (exp.description) lines.push(exp.description);
-      for (const achievement of exp.achievements) lines.push(`- ${achievement}`);
+      if (exp.projects.length > 0) {
+        for (const project of exp.projects) {
+          lines.push(`**${project.name}**`);
+          for (const goal of project.goals) lines.push(`- ${goal}`);
+        }
+      } else {
+        for (const achievement of exp.achievements) lines.push(`- ${achievement}`);
+      }
       lines.push("");
     }
   }

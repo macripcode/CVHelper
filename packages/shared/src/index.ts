@@ -14,14 +14,22 @@ export interface CandidatePersonal {
   website: string;
 }
 
+export interface CandidateProject {
+  name: string;
+  goals: string[];
+}
+
 export interface CandidateExperience {
   company: string;
   role: string;
-  project: string;
   startDate: string;
   endDate: string;
   description: string;
+  /** Flat achievements for this experience, used only when `projects` is empty. */
   achievements: string[];
+  /** Sub-projects under this employer (e.g. multiple client projects under one contracting company).
+   *  When non-empty, these render instead of `achievements`. */
+  projects: CandidateProject[];
 }
 
 export interface CandidateLanguage {

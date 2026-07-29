@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import type { DragEvent, ReactNode } from 'react'
-import type { CvTailoringInput } from '@cvhelper/shared'
+import type { CandidateProject, CvTailoringInput } from '@cvhelper/shared'
 import { EMPTY_CV_TAILORING_INPUT } from '@cvhelper/shared'
 import { api } from '../api'
 
@@ -69,6 +69,7 @@ export const CvLatexPanel = forwardRef<CvLatexPanelHandle>(function CvLatexPanel
   const [newLinkValue, setNewLinkValue] = useState('')
   const [newTech, setNewTech] = useState('')
   const [draggedExperienceIndex, setDraggedExperienceIndex] = useState<number | null>(null)
+  const [draggedProject, setDraggedProject] = useState<{ expIndex: number; projectIndex: number } | null>(null)
   const [draggedEducationIndex, setDraggedEducationIndex] = useState<number | null>(null)
   const [draggedLanguageIndex, setDraggedLanguageIndex] = useState<number | null>(null)
   const [status, setStatus] = useState<'loading' | 'idle' | 'error'>('loading')
@@ -135,7 +136,7 @@ export const CvLatexPanel = forwardRef<CvLatexPanelHandle>(function CvLatexPanel
       ...resume,
       experience: [
         ...resume.experience,
-        { company: '', role: '', project: '', startDate: '', endDate: '', description: '', achievements: [] },
+        { company: '', role: '', startDate: '', endDate: '', description: '', achievements: [], projects: [] },
       ],
     })
   }
@@ -148,6 +149,52 @@ export const CvLatexPanel = forwardRef<CvLatexPanelHandle>(function CvLatexPanel
 
   function removeExperience(index: number) {
     setResume({ ...resume, experience: resume.experience.filter((_, i) => i !== index) })
+  }
+
+  function addProject(expIndex: number) {
+    const experience = [...resume.experience]
+    experience[expIndex] = {
+      ...experience[expIndex],
+      projects: [...experience[expIndex].projects, { name: '', goals: [] }],
+    }
+    setResume({ ...resume, experience })
+  }
+
+  function updateProject(expIndex: number, projectIndex: number, field: keyof CandidateProject, value: string | string[]) {
+    const experience = [...resume.experience]
+    const projects = [...experience[expIndex].projects]
+    projects[projectIndex] = { ...projects[projectIndex], [field]: value }
+    experience[expIndex] = { ...experience[expIndex], projects }
+    setResume({ ...resume, experience })
+  }
+
+  function removeProject(expIndex: number, projectIndex: number) {
+    const experience = [...resume.experience]
+    experience[expIndex] = {
+      ...experience[expIndex],
+      projects: experience[expIndex].projects.filter((_, i) => i !== projectIndex),
+    }
+    setResume({ ...resume, experience })
+  }
+
+  function handleProjectDragStart(expIndex: number, projectIndex: number) {
+    setDraggedProject({ expIndex, projectIndex })
+  }
+
+  function handleProjectDragOver(e: DragEvent, expIndex: number, projectIndex: number) {
+    e.preventDefault()
+    if (!draggedProject || draggedProject.expIndex !== expIndex || draggedProject.projectIndex === projectIndex) return
+    const experience = [...resume.experience]
+    const projects = [...experience[expIndex].projects]
+    const [moved] = projects.splice(draggedProject.projectIndex, 1)
+    projects.splice(projectIndex, 0, moved)
+    experience[expIndex] = { ...experience[expIndex], projects }
+    setDraggedProject({ expIndex, projectIndex })
+    setResume({ ...resume, experience })
+  }
+
+  function handleProjectDragEnd() {
+    setDraggedProject(null)
   }
 
   function handleExperienceDragStart(index: number) {
@@ -379,17 +426,57 @@ export const CvLatexPanel = forwardRef<CvLatexPanelHandle>(function CvLatexPanel
               <input placeholder="End date" value={exp.endDate} onChange={(e) => updateExperience(i, 'endDate', e.target.value)} />
             </div>
             <textarea
-              rows={2}
+              rows={4}
               placeholder="Description"
               value={exp.description}
               onChange={(e) => updateExperience(i, 'description', e.target.value)}
             />
-            <textarea
-              rows={3}
-              placeholder="Achievements (one per line)"
-              value={exp.achievements.join('\n')}
-              onChange={(e) => updateExperience(i, 'achievements', e.target.value.split('\n').filter(Boolean))}
-            />
+            {exp.projects.length === 0 && (
+              <textarea
+                rows={6}
+                placeholder="Achievements (one per line)"
+                value={exp.achievements.join('\n')}
+                onChange={(e) => updateExperience(i, 'achievements', e.target.value.split('\n').filter(Boolean))}
+              />
+            )}
+            {exp.projects.map((project, pi) => (
+              <div
+                className={`card${draggedProject?.expIndex === i && draggedProject.projectIndex === pi ? ' dragging' : ''}`}
+                key={pi}
+                onDragOver={(e) => handleProjectDragOver(e, i, pi)}
+              >
+                <div className="card-header">
+                  <button
+                    type="button"
+                    className="drag-handle"
+                    aria-label="Drag to reorder"
+                    draggable
+                    onDragStart={() => handleProjectDragStart(i, pi)}
+                    onDragEnd={handleProjectDragEnd}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="4" y1="8" x2="20" y2="8" />
+                      <line x1="4" y1="14" x2="20" y2="14" />
+                      <line x1="4" y1="20" x2="20" y2="20" />
+                    </svg>
+                  </button>
+                  <span className="field-label">Project</span>
+                  <button type="button" className="icon-button" aria-label="Remove project" onClick={() => removeProject(i, pi)}>×</button>
+                </div>
+                <input
+                  placeholder="Project name"
+                  value={project.name}
+                  onChange={(e) => updateProject(i, pi, 'name', e.target.value)}
+                />
+                <textarea
+                  rows={4}
+                  placeholder="Goals (one per line)"
+                  value={project.goals.join('\n')}
+                  onChange={(e) => updateProject(i, pi, 'goals', e.target.value.split('\n').filter(Boolean))}
+                />
+              </div>
+            ))}
+            <button type="button" onClick={() => addProject(i)}>+ Add project</button>
           </div>
         ))}
         <button type="button" className="icon-button" aria-label="Add experience" onClick={addExperience}>+</button>

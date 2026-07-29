@@ -36,45 +36,25 @@ function dateRange(start: string, end: string): string {
   return [start, end].filter(Boolean).join(" -- ");
 }
 
-function groupByCompany(experience: CandidateExperience[]): CandidateExperience[][] {
-  const groups: CandidateExperience[][] = [];
-  const indexByCompany = new Map<string, number>();
-  for (const entry of experience) {
-    const key = entry.company.trim().toLowerCase();
-    const existingIndex = indexByCompany.get(key);
-    if (existingIndex !== undefined) {
-      groups[existingIndex].push(entry);
-    } else {
-      indexByCompany.set(key, groups.length);
-      groups.push([entry]);
-    }
-  }
-  return groups;
-}
-
 function renderAchievements(achievements: string[]): string {
   if (achievements.length === 0) return "";
   const items = achievements.map((a) => `  \\item ${escapeLatex(a)}`).join("\n");
   return `\\begin{itemize}\n${items}\n\\end{itemize}`;
 }
 
-function renderExperienceGroup(group: CandidateExperience[]): string {
-  const [first] = group;
-  const header = `\\textbf{${escapeLatex(first.company)} -- ${escapeLatex(first.role)}} \\hfill \\textit{${dateRange(first.startDate, first.endDate)}}`;
+function renderExperienceEntry(entry: CandidateExperience): string {
+  const header = `\\textbf{${escapeLatex(entry.company)} -- ${escapeLatex(entry.role)}} \\hfill \\textit{${dateRange(entry.startDate, entry.endDate)}}`;
+  const description = entry.description ? escapeLatex(entry.description) : "";
 
-  const description = first.description ? escapeLatex(first.description) : "";
-  const hasProjects = group.length > 1 || group.some((entry) => entry.project.trim());
-
-  if (!hasProjects) {
-    const body = [description, renderAchievements(first.achievements)].filter(Boolean).join("\n\n");
+  if (entry.projects.length === 0) {
+    const body = [description, renderAchievements(entry.achievements)].filter(Boolean).join("\n\n");
     return [header, body].filter(Boolean).join("\n\n");
   }
 
-  const projectItems = group
-    .map((entry) => {
-      const title = entry.project.trim() || entry.role;
-      const nested = renderAchievements(entry.achievements);
-      return `\\item \\textbf{${escapeLatex(title)}}\n${nested}`;
+  const projectItems = entry.projects
+    .map((project) => {
+      const nested = renderAchievements(project.goals);
+      return `\\item \\textbf{${escapeLatex(project.name)}}\n${nested}`;
     })
     .join("\n\n");
 
@@ -133,9 +113,8 @@ export function candidateToLatex(candidate: CvTailoringInput): string {
   }
 
   if (candidate.experience.length > 0) {
-    const groups = groupByCompany(candidate.experience);
-    const groupsLatex = groups.map(renderExperienceGroup).join("\n\n");
-    sections.push(`% ---------- Experience ----------\n\\section*{Professional Experience}\n\n${groupsLatex}`);
+    const entriesLatex = candidate.experience.map(renderExperienceEntry).join("\n\n");
+    sections.push(`% ---------- Experience ----------\n\\section*{Professional Experience}\n\n${entriesLatex}`);
   }
 
   if (candidate.education.length > 0) {
