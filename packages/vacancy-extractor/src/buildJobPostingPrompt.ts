@@ -21,6 +21,7 @@ export function buildJobPostingPrompt(jobDescription: string): string {
     "- responsibilities: the main responsibilities of the role, at most 10.",
     "- requirements: the main requirements for the role, at most 10.",
     "- preferredQualifications: the desirable/nice-to-have qualifications, at most 10.",
+    '- professionalProfileSummary: a concise first-person resume profile (2–4 sentences) that could be pasted directly into the Professional Summary or Profile section of a resume. Write from the candidate\'s perspective using "I", "my", and "me". Summarize the professional background, core technical skills, areas of expertise, and strengths that best match the job posting, based only on information explicitly stated or reasonably inferable from it. Prioritize the most important ATS keywords naturally while maintaining fluent, human-sounding language. Do not invent years of experience, certifications, accomplishments, employers, or technologies that are not supported by the posting. Do not mention the job posting or compare the candidate to other applicants. Return only the summary. Use null if there is insufficient information to generate a meaningful profile.',
     "",
     "Job posting:",
     jobDescription,

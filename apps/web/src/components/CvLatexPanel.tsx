@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import type { DragEvent, ReactNode } from 'react'
 import type { CvTailoringInput } from '@cvhelper/shared'
 import { EMPTY_CV_TAILORING_INPUT } from '@cvhelper/shared'
@@ -58,7 +58,12 @@ function toTailoringInput(candidate: Awaited<ReturnType<typeof api.getCandidate>
   }
 }
 
-export function CvLatexPanel() {
+export interface CvLatexPanelHandle {
+  replaceTechStack: (techStack: string[]) => void
+  replaceSummary: (summary: string) => void
+}
+
+export const CvLatexPanel = forwardRef<CvLatexPanelHandle>(function CvLatexPanel(_props, ref) {
   const [resume, setResume] = useState<CvTailoringInput>(EMPTY_CV_TAILORING_INPUT)
   const [newLinkLabel, setNewLinkLabel] = useState('')
   const [newLinkValue, setNewLinkValue] = useState('')
@@ -84,6 +89,11 @@ export function CvLatexPanel() {
   useEffect(() => {
     loadCandidate()
   }, [])
+
+  useImperativeHandle(ref, () => ({
+    replaceTechStack: (techStack: string[]) => setResume((prev) => ({ ...prev, techStack })),
+    replaceSummary: (summary: string) => setResume((prev) => ({ ...prev, summary })),
+  }))
 
   function updatePersonal<K extends keyof CvTailoringInput['personal']>(key: K, value: CvTailoringInput['personal'][K]) {
     setResume({ ...resume, personal: { ...resume.personal, [key]: value } })
@@ -461,4 +471,4 @@ export function CvLatexPanel() {
       {error && <p className="hint error">{error}</p>}
     </div>
   )
-}
+})

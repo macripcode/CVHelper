@@ -8,4 +8,4 @@ dist-ssr
 .turbo
 coverage
 apps/api/data/*
-!apps/api/data/candidate.json
+!apps/api/data/candidate.dump.json

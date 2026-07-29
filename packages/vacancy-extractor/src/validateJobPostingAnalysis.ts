@@ -77,5 +77,8 @@ export function validateJobPostingAnalysis(rawText: string): JobPostingAnalysis 
     responsibilities: toStringArray(record.responsibilities, 10),
     requirements: toStringArray(record.requirements, 10),
     preferredQualifications: toStringArray(record.preferredQualifications, 10),
+    professionalProfileSummary: isNonEmptyString(record.professionalProfileSummary)
+      ? record.professionalProfileSummary.trim()
+      : null,
   };
 }

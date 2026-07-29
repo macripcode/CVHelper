@@ -29,6 +29,7 @@ export const jobPostingSchema: Schema = {
     responsibilities: stringArray,
     requirements: stringArray,
     preferredQualifications: stringArray,
+    professionalProfileSummary: { type: SchemaType.STRING, nullable: true },
   },
   required: [
     "company",
@@ -44,5 +45,6 @@ export const jobPostingSchema: Schema = {
     "responsibilities",
     "requirements",
     "preferredQualifications",
+    "professionalProfileSummary",
   ],
 };

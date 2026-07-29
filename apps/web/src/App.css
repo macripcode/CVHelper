@@ -52,6 +52,28 @@ legend {
   font-size: 14px;
 }
 
+.professional-profile-summary {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.field-row > input {
+  border-color: var(--accent-border);
+}
+
+.job-posting-textarea {
+  border-color: var(--accent-border);
+}
+
+.tech-suggestions {
+  border-color: var(--accent-border);
+}
+
+.centered-button {
+  align-self: center;
+}
+
 .collapse-toggle {
   display: inline-flex;
   align-items: center;
@@ -143,6 +165,7 @@ legend {
 input,
 textarea {
   font: inherit;
+  font-size: 14px;
   padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;

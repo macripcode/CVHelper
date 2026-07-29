@@ -1,20 +1,22 @@
 import { useState } from 'react'
 import type { VacancyDetails } from '@cvhelper/shared'
 import { EMPTY_VACANCY } from '@cvhelper/shared'
-import { extractJobTechnologies, techCatalog } from '@cvhelper/tech-fit'
 import { api } from '../api'
 
-export function ReviewAndTailor() {
+interface ReviewAndTailorProps {
+  onUseTechStack?: (techStack: string[]) => void
+  onUseSummary?: (summary: string) => void
+}
+
+export function ReviewAndTailor({ onUseTechStack, onUseSummary }: ReviewAndTailorProps) {
   const [form, setForm] = useState<VacancyDetails>(EMPTY_VACANCY)
   const [notes, setNotes] = useState('')
   const [loading, setLoading] = useState<'idle' | 'reading'>('idle')
+  const [professionalProfileSummary, setProfessionalProfileSummary] = useState<string | null>(null)
+  const [detectedTechnologies, setDetectedTechnologies] = useState<string[]>([])
 
   function updateField<K extends keyof VacancyDetails>(key: K, value: VacancyDetails[K]) {
     setForm({ ...form, [key]: value })
-  }
-
-  function removeTech(index: number) {
-    setForm({ ...form, techStack: form.techStack.filter((_, i) => i !== index) })
   }
 
   function removeLanguage(index: number) {
@@ -22,12 +24,12 @@ export function ReviewAndTailor() {
   }
 
   async function readTechnologiesFromText() {
-    const detected = extractJobTechnologies(notes, techCatalog)
-    setForm({ ...form, techStack: detected })
-
     setLoading('reading')
+    setProfessionalProfileSummary(null)
+    setDetectedTechnologies([])
     try {
       const analysis = await api.extractJobPosting(notes)
+      setDetectedTechnologies(analysis.technologies)
       setForm((prev) => {
         const next = { ...prev }
         if (analysis.company && !prev.company.trim()) next.company = analysis.company
@@ -48,8 +50,9 @@ export function ReviewAndTailor() {
         }
         return next
       })
+      setProfessionalProfileSummary(analysis.professionalProfileSummary)
     } catch {
-      // Job posting analysis is a non-blocking convenience — tech stack detection above already succeeded.
+      // Job posting analysis failure is non-blocking — every field here stays manually editable.
     } finally {
       setLoading('idle')
     }
@@ -61,6 +64,7 @@ export function ReviewAndTailor() {
       <fieldset>
         <legend>Job posting text</legend>
         <textarea
+          className="job-posting-textarea"
           rows={10}
           placeholder="Paste the full job posting text here"
           value={notes}
@@ -77,16 +81,6 @@ export function ReviewAndTailor() {
       </fieldset>
       <fieldset>
         <legend>Job posting details</legend>
-        {form.techStack.length > 0 && (
-          <div className="tag-list">
-            {form.techStack.map((tech, i) => (
-              <span className="tag" key={i}>
-                {tech}
-                <button type="button" aria-label={`Remove ${tech}`} onClick={() => removeTech(i)}>×</button>
-              </span>
-            ))}
-          </div>
-        )}
         <div className="field-row">
           <span className="field-label">Company</span>
           <input value={form.company} onChange={(e) => updateField('company', e.target.value)} />
@@ -95,6 +89,42 @@ export function ReviewAndTailor() {
           <span className="field-label">Role</span>
           <input value={form.role} onChange={(e) => updateField('role', e.target.value)} />
         </div>
+        <fieldset className="tech-suggestions">
+          <legend>All detected technologies</legend>
+          {detectedTechnologies.length > 0 ? (
+            <div className="tag-list">
+              {detectedTechnologies.map((tech, i) => (
+                <span className="tag" key={i}>{tech}</span>
+              ))}
+            </div>
+          ) : (
+            <p className="hint">Paste a job posting and click Read to detect technologies.</p>
+          )}
+          <button
+            type="button"
+            className="centered-button"
+            disabled={detectedTechnologies.length === 0}
+            onClick={() => onUseTechStack?.(detectedTechnologies)}
+          >
+            Use this Tech Stack
+          </button>
+        </fieldset>
+        <fieldset className="tech-suggestions">
+          <legend>Professional summary</legend>
+          {professionalProfileSummary ? (
+            <p className="professional-profile-summary">{professionalProfileSummary}</p>
+          ) : (
+            <p className="hint">Paste a job posting and click Read to generate this.</p>
+          )}
+          <button
+            type="button"
+            className="centered-button"
+            disabled={!professionalProfileSummary}
+            onClick={() => professionalProfileSummary && onUseSummary?.(professionalProfileSummary)}
+          >
+            Use this summary profile
+          </button>
+        </fieldset>
         <div className="field-row">
           <span className="field-label">Seniority</span>
           <input value={form.seniority} onChange={(e) => updateField('seniority', e.target.value)} />

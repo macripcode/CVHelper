@@ -35,6 +35,10 @@ export interface JobPostingAnalysis {
   responsibilities: string[];
   requirements: string[];
   preferredQualifications: string[];
+  /** A concise first-person resume "Professional Summary" (2-4 sentences), written as if the
+   *  candidate wrote it themselves ("I", "my", "me"), generated purely from the job posting text
+   *  — not personalized to any real candidate's actual background. */
+  professionalProfileSummary: string | null;
 }
 
 export const EMPTY_JOB_POSTING_ANALYSIS: JobPostingAnalysis = {
@@ -51,4 +55,5 @@ export const EMPTY_JOB_POSTING_ANALYSIS: JobPostingAnalysis = {
   responsibilities: [],
   requirements: [],
   preferredQualifications: [],
+  professionalProfileSummary: null,
 };
